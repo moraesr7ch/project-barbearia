@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="JOTAGAAHBS Barbearia por Assinatura em Tietê, SP. Agende seu corte de cabelo, barba, platinado e serviços premium em nosso estúdio de luxo vintage.">
+  <meta name="keywords" content="barbearia, barbearia por assinatura, tiete sp, agendamento de corte, cabelo e barba, jota barbearia">
+  <meta name="author" content="JOTAGAAHBS Barbearia">
+  <title>JOTAGAAHBS | Barbearia por Assinatura Premium</title>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Estilo Principal -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Container Mobile-First -->
+  <div class="app-container" id="app-root">
+    
+    <!-- Linha Decorativa Barber Pole -->
+    <div class="barber-pole-line" id="barber-pole-top"></div>
+    
+    <!-- Cabeçalho Principal -->
+    <header id="main-header">
+      <div class="header-top">
+        <!-- Logo Secreto (Trigger para Admin com 5 cliques) -->
+        <div class="logo-wrapper" id="secret-admin-trigger" role="button" aria-label="Área administrativa">
+          <span class="logo-text">JOTAGAAHBS</span>
+          <span class="logo-subtext">Barbearia por Assinatura</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Conteúdo Principal Dinâmico SPA -->
+    <main id="app-main-content">
+      
+      <!-- ==========================================
+           1. HOME SCREEN
+           ========================================== -->
+      <section id="home-screen" class="app-screen active">
+        <!-- Hero Banner -->
+        <article class="hero-section" id="hero-banner">
+          <div class="hero-badge" id="hero-badge-tag">Membro Premium</div>
+          <h1 class="hero-title" id="hero-headline">ESTILO COM <br><span style="color: var(--accent-red);">PERSONALIDADE</span></h1>
+          <p class="hero-description" id="hero-subtext">Viva a experiência do vintage clássico americano aliado ao luxo moderno. Cabelo, barba e bem-estar em um estúdio exclusivo.</p>
+          <button class="btn-premium btn-primary" id="home-booking-cta" aria-label="Agendar um horário agora">
+            <i class="fa-solid fa-calendar-check"></i> AGENDAR HORÁRIO
+          </button>
+        </article>
+
+        <!-- Informações Rápidas -->
+        <div class="quick-info-row" id="quick-info-container">
+          <div class="info-card" id="info-rating">
+            <i class="fa-solid fa-star"></i>
+            <h4>Avaliação</h4>
+            <p class="gold-text" style="font-size: 0.95rem; margin-top: 0.2rem;">5.0 / 5.0</p>
+          </div>
+          <div class="info-card" id="info-location">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <h4>Endereço</h4>
+            <p>Tietê, SP</p>
+          </div>
+          <div class="info-card" id="info-status">
+            <i class="fa-solid fa-door-open"></i>
+            <h4>Hoje</h4>
+            <p id="today-status-text">Aberto</p>
+          </div>
+        </div>
+
+        <!-- Preview de Serviços -->
+        <section class="services-preview-section" id="services-preview">
+          <h2 class="section-title" id="services-title">SERVIÇOS DE ASSINATURA</h2>
+          <div class="service-preview-list" id="services-preview-list">
+            <!-- Os serviços serão populados dinamicamente via JS ou listados para SEO -->
+            <article class="service-item-row">
+              <div class="service-item-info">
+                <h4>CORTE & BARBA</h4>
+                <p>O combo perfeito com toalha quente e acabamento premium.</p>
+              </div>
+              <span class="service-item-price">R$ 69,99</span>
+            </article>
+            <article class="service-item-row">
+              <div class="service-item-info">
+                <h4>NEVOU PLATINADO</h4>
+                <p>Descoloração global ultra segura e tom platinado perfeito.</p>
+              </div>
+              <span class="service-item-price">R$ 179,97</span>
+            </article>
+            <article class="service-item-row">
+              <div class="service-item-info">
+                <h4>BARBOTERAPIA PREMIUM</h4>
+                <p>Barba desenhada, óleos especiais e relaxamento completo.</p>
+              </div>
+              <span class="service-item-price">R$ 45,00</span>
+            </article>
+          </div>
+          <button class="btn-premium btn-secondary mt-2" id="home-view-services-btn" aria-label="Ver todos os serviços disponíveis">
+            VER TODOS OS SERVIÇOS (10)
+          </button>
+        </section>
+
+        <!-- Horários de Funcionamento -->
+        <section class="hours-section" id="business-hours-info">
+          <h2 class="section-title" id="hours-title">HORÁRIOS</h2>
+          <div class="chrome-card" id="hours-card">
+            <div class="hours-table" id="hours-list">
+              <div class="hours-row">
+                <span class="hours-day">Terça a Sexta</span>
+                <span class="hours-time">08:00 às 20:00</span>
+              </div>
+              <div class="hours-row">
+                <span class="hours-day">Sábado</span>
+                <span class="hours-time">08:00 às 19:00</span>
+              </div>
+              <div class="hours-row closed">
+                <span class="hours-day">Segunda e Domingo</span>
+                <span class="hours-time">FECHADO</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Endereço e Localização -->
+        <section class="address-section" id="store-address-info">
+          <h2 class="section-title" id="address-title">LOCALIZAÇÃO</h2>
+          <div class="chrome-card address-card" id="address-details-card">
+            <div class="map-placeholder" id="virtual-map">
+              <i class="fa-solid fa-location-dot map-pin"></i>
+              <div class="map-location-tag">Tietê, SP</div>
+            </div>
+            <div class="text-center" id="address-text-container">
+              <p style="color: var(--text-light); font-weight: 500; font-size: 0.95rem;">Rua Enok Barreira de Macedo, 444</p>
+              <p style="font-size: 0.85rem;" class="mt-1">Tietê - SP | CEP 18200-000</p>
+            </div>
+            <a href="https://maps.google.com/?q=Rua+Enok+Barreira+de+Macedo+444+Tiete+SP" target="_blank" class="btn-premium btn-secondary" id="address-gps-button" aria-label="Abrir no GPS Google Maps">
+              <i class="fa-solid fa-compass"></i> ABRIR NO GPS
+            </a>
+          </div>
+        </section>
+      </section>
+
+      <!-- ==========================================
+           2. BOOKING SCREEN
+           ========================================== -->
+      <section id="booking-screen" class="app-screen">
+        <h2 class="section-title" id="booking-screen-title">RESERVAR HORÁRIO</h2>
+        
+        <div class="booking-flow-container" id="booking-flow">
+          
+          <!-- Barra de Progresso do Fluxo de Agendamento -->
+          <div class="progress-bar-container" id="booking-progress-header">
+            <div class="progress-bar-line"></div>
+            <div class="progress-bar-fill" id="booking-progress-fill"></div>
+            <div class="progress-step-dot active" data-step="1" id="dot-step-1">1</div>
+            <div class="progress-step-dot" data-step="2" id="dot-step-2">2</div>
+            <div class="progress-step-dot" data-step="3" id="dot-step-3">3</div>
+            <div class="progress-step-dot" data-step="4" id="dot-step-4">4</div>
+            <div class="progress-step-dot" data-step="5" id="dot-step-5">5</div>
+          </div>
+
+          <!-- Passo 1: Seleção de Serviço -->
+          <div class="step-pane active" id="step-pane-1">
+            <h3 class="step-title" id="step-title-1">1. Escolha o Serviço</h3>
+            <p class="step-description">Selecione o procedimento que deseja realizar com nossos especialistas.</p>
+            <div class="booking-services-grid" id="booking-services-list">
+              <!-- Populados via JS dinamicamente com todos os 10 serviços -->
+            </div>
+          </div>
+
+          <!-- Passo 2: Seleção de Data -->
+          <div class="step-pane" id="step-pane-2">
+            <h3 class="step-title" id="step-title-2">2. Escolha a Data</h3>
+            <p class="step-description">Selecione o dia disponível. Atenção: fechados às segundas e domingos.</p>
+            <div class="calendar-widget" id="booking-calendar-widget">
+              <div class="calendar-header">
+                <button class="calendar-nav-btn" id="prev-month-btn" aria-label="Mês anterior"><i class="fa-solid fa-chevron-left"></i></button>
+                <h3 id="calendar-current-month">Maio 2026</h3>
+                <button class="calendar-nav-btn" id="next-month-btn" aria-label="Próximo mês"><i class="fa-solid fa-chevron-right"></i></button>
+              </div>
+              <div class="calendar-weekdays">
+                <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+              </div>
+              <div class="calendar-days" id="calendar-days-grid">
+                <!-- Populado via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Passo 3: Seleção de Horário -->
+          <div class="step-pane" id="step-pane-3">
+            <h3 class="step-title" id="step-title-3">3. Escolha o Horário</h3>
+            <p class="step-description">Escolha um horário livre para o dia selecionado.</p>
+            <div class="time-slots-grid" id="booking-time-slots">
+              <!-- Populados dinamicamente via JS baseados no dia da semana -->
+            </div>
+          </div>
+
+          <!-- Passo 4: Dados do Cliente -->
+          <div class="step-pane" id="step-pane-4">
+            <h3 class="step-title" id="step-title-4">4. Seus Dados</h3>
+            <p class="step-description">Preencha seus dados para receber o lembrete de agendamento.</p>
+            <div class="booking-form" id="booking-user-form">
+              <div class="booking-form-group">
+                <label for="booking-name">Nome Completo</label>
+                <input type="text" id="booking-name" class="input-premium" placeholder="Ex: João Silva" required>
+              </div>
+              <div class="booking-form-group">
+                <label for="booking-phone">WhatsApp / Telefone</label>
+                <input type="tel" id="booking-phone" class="input-premium" placeholder="Ex: (15) 99999-9999" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Passo 5: Confirmação e Redirecionamento -->
+          <div class="step-pane" id="step-pane-5">
+            <h3 class="step-title" id="step-title-5">5. Confirmar Reserva</h3>
+            <p class="step-description">Confirme todos os detalhes abaixo. Para finalizar, clique no botão e envie a mensagem no WhatsApp.</p>
+            
+            <div class="receipt-card" id="booking-receipt-details">
+              <h4 class="receipt-title">RECIBO DE RESERVA</h4>
+              <div class="receipt-row">
+                <span class="receipt-label">Serviço:</span>
+                <span class="receipt-value" id="receipt-service-name">-</span>
+              </div>
+              <div class="receipt-row">
+                <span class="receipt-label">Data:</span>
+                <span class="receipt-value" id="receipt-date">-</span>
+              </div>
+              <div class="receipt-row">
+                <span class="receipt-label">Horário:</span>
+                <span class="receipt-value" id="receipt-time">-</span>
+              </div>
+              <div class="receipt-row">
+                <span class="receipt-label">Cliente:</span>
+                <span class="receipt-value" id="receipt-client-name">-</span>
+              </div>
+              <div class="receipt-row total">
+                <span class="receipt-label">Valor do Serviço:</span>
+                <span class="receipt-value" id="receipt-price">-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botões de Navegação do Fluxo -->
+          <div class="flow-actions-row" id="booking-actions-row">
+            <button class="btn-premium btn-secondary d-none" id="btn-booking-back" aria-label="Voltar etapa">VOLTAR</button>
+            <button class="btn-premium btn-primary" id="btn-booking-next" aria-label="Avançar etapa">AVANÇAR</button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==========================================
+           3. REVIEWS SCREEN
+           ========================================== -->
+      <section id="reviews-screen" class="app-screen">
+        <h2 class="section-title" id="reviews-screen-title">AVALIAÇÕES</h2>
+        
+        <div class="reviews-summary" id="reviews-general-summary">
+          <div class="reviews-score-big" id="avg-rating-value">5.0</div>
+          <div class="reviews-stars-column">
+            <div class="stars-rating" id="avg-stars-row">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <h4 class="mt-1" id="reviews-count-label">Baseado em 5 avaliações</h4>
+          </div>
+        </div>
+
+        <!-- Lista de Reviews -->
+        <div class="reviews-list" id="reviews-list-container">
+          <!-- Populados dinamicamente via JS -->
+        </div>
+
+        <!-- Formulário para Submeter Nova Avaliação -->
+        <section class="add-review-section" id="add-new-review-form">
+          <h3 class="step-title" style="font-size: 1.3rem;">Deixe sua Avaliação</h3>
+          <p class="step-description">Sua opinião é fundamental para mantermos o nosso padrão de luxo por assinatura.</p>
+          
+          <form id="review-submit-form" onsubmit="return false;">
+            <div class="booking-form-group">
+              <label>Sua Nota</label>
+              <div class="stars-selector-row" id="stars-selector" role="radiogroup" aria-label="Nota de 1 a 5 estrelas">
+                <i class="fa-solid fa-star selected" data-value="1" role="radio" aria-checked="false" tabindex="0"></i>
+                <i class="fa-solid fa-star selected" data-value="2" role="radio" aria-checked="false" tabindex="-1"></i>
+                <i class="fa-solid fa-star selected" data-value="3" role="radio" aria-checked="false" tabindex="-1"></i>
+                <i class="fa-solid fa-star selected" data-value="4" role="radio" aria-checked="false" tabindex="-1"></i>
+                <i class="fa-solid fa-star selected" data-value="5" role="radio" aria-checked="true" tabindex="-1"></i>
+              </div>
+            </div>
+            <div class="booking-form-group">
+              <label for="review-author-name">Seu Nome</label>
+              <input type="text" id="review-author-name" class="input-premium" placeholder="Ex: Roberto Carlos" required>
+            </div>
+            <div class="booking-form-group">
+              <label for="review-comment-text">Mensagem / Feedback</label>
+              <textarea id="review-comment-text" class="input-premium" rows="4" placeholder="Conte como foi sua experiência..." style="resize: none;" required></textarea>
+            </div>
+            <button type="submit" class="btn-premium btn-primary" id="btn-submit-review" aria-label="Enviar avaliação">
+              ENVIAR AVALIAÇÃO
+            </button>
+          </form>
+        </section>
+      </section>
+
+      <!-- ==========================================
+           4. ADMIN SCREEN (PASSWORD PROTECTED)
+           ========================================== -->
+      <section id="admin-screen" class="app-screen">
+        
+        <!-- Tela de Bloqueio (Senha) -->
+        <article class="admin-lock-screen" id="admin-login-lock">
+          <i class="fa-solid fa-user-shield admin-lock-icon"></i>
+          <h2 class="step-title">Painel Administrativo</h2>
+          <p class="step-description">Acesso restrito para funcionários da JOTAGAAHBS Barbearia.</p>
+          
+          <form id="admin-login-form" style="width: 100%; max-width: 320px;" onsubmit="return false;">
+            <div class="booking-form-group">
+              <label for="admin-password">Senha de Acesso</label>
+              <input type="password" id="admin-password" class="input-premium text-center" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-premium btn-primary" id="btn-login-admin" aria-label="Entrar no painel administrativo">ENTRAR</button>
+          </form>
+        </article>
+
+        <!-- Dashboard Administrativo Liberado -->
+        <div class="admin-dashboard-view" id="admin-dashboard">
+          <div class="admin-tabs" id="admin-tabs-nav">
+            <button class="admin-tab-btn active" data-tab="tab-bookings" id="tab-btn-bookings">Agendamentos</button>
+            <button class="admin-tab-btn" data-tab="tab-blocks" id="tab-btn-blocks">Bloqueios</button>
+          </div>
+
+          <!-- Aba de Agendamentos -->
+          <div class="admin-pane active" id="tab-bookings">
+            <div class="chrome-card mb-2" id="admin-stats-card">
+              <div class="admin-card-header">
+                <h3>Resumo de Hoje</h3>
+                <span class="admin-badge" id="today-bookings-count">0</span>
+              </div>
+              <p style="font-size: 0.85rem;">Gerencie as reservas e envie lembretes rápidos via WhatsApp.</p>
+            </div>
+
+            <div class="bookings-list" id="admin-bookings-list">
+              <!-- Preenchido via JS com agendamentos do localStorage -->
+            </div>
+          </div>
+
+          <!-- Aba de Bloqueio de Datas/Horários -->
+          <div class="admin-pane" id="tab-blocks">
+            <div class="chrome-card mb-2" id="admin-block-form-card">
+              <div class="admin-card-header">
+                <h3>Bloquear Dia Inteiro</h3>
+              </div>
+              <form id="admin-block-date-form" onsubmit="return false;">
+                <div class="booking-form-group">
+                  <label for="block-date-input">Data a Bloquear</label>
+                  <input type="date" id="block-date-input" class="input-premium" required>
+                </div>
+                <button type="submit" class="btn-premium btn-primary" id="btn-block-date" aria-label="Confirmar bloqueio de data">BLOQUEAR DIA</button>
+              </form>
+            </div>
+
+            <div class="chrome-card" id="admin-blocked-list-card">
+              <div class="admin-card-header">
+                <h3>Datas Bloqueadas</h3>
+              </div>
+              <div class="blocked-dates-list" id="admin-blocked-dates-list">
+                <!-- Populado via JS -->
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-premium btn-secondary mt-2" id="btn-logout-admin" aria-label="Sair da conta administrativa">
+            <i class="fa-solid fa-right-from-bracket"></i> SAIR DO PAINEL
+          </button>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Botão Flutuante do WhatsApp -->
+    <a href="https://wa.me/5515996406909?text=Ol%C3%A1%21+Gostaria+de+saber+mais+sobre+a+Barbearia+JOTAGAAHBS." target="_blank" class="whatsapp-float" id="whatsapp-float-btn" aria-label="Fale Conosco pelo WhatsApp">
+      <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- Barra de Navegação Inferior estilo App Nativo -->
+    <nav class="nav-bottom-bar" id="app-bottom-nav">
+      <a class="nav-item active" data-screen="home-screen" id="nav-home">
+        <i class="fa-solid fa-house"></i>
+        <span>Início</span>
+      </a>
+      <a class="nav-item" data-screen="booking-screen" id="nav-booking">
+        <i class="fa-solid fa-calendar-days"></i>
+        <span>Agendar</span>
+      </a>
+      <a class="nav-item" data-screen="reviews-screen" id="nav-reviews">
+        <i class="fa-solid fa-star-half-stroke"></i>
+        <span>Avaliar</span>
+      </a>
+    </nav>
+
+    <!-- Toast Notifications Globais -->
+    <div class="toast-container" id="toast-container-global"></div>
+
+  </div>
+
+  <!-- Lógica Principal do App -->
+  <script src="app.js"></script>
+</body>
+</html>
