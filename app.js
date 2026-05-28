@@ -412,9 +412,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Proteger Rota de Agendamento
     if (screenId === 'booking-screen' && !client) {
-      showToast('Por favor, acesse sua conta ou cadastre-se para reservar.', 'error');
+      showToast('Por favor, crie uma conta para realizar o agendamento.', 'warning');
       navigateTo('login-screen');
       setAuthMode('client');
+      formClientLogin.classList.add('d-none');
+      formClientRegister.classList.remove('d-none');
       return;
     }
 
@@ -442,41 +444,51 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Gerenciador Visual SPA
-    screens.forEach(screen => {
-      if (screen.id === screenId) {
-        screen.classList.add('active');
-        
-        // Re-dispara as animações de reveal do Tailwind
-        screen.querySelectorAll('.reveal-item-tw').forEach(item => {
-          item.style.animation = 'none';
-          item.offsetHeight; /* trigger reflow */
-          item.style.animation = '';
-        });
-      } else {
-        screen.classList.remove('active');
-      }
-    });
+    function executeScreenSwitch() {
+      // Gerenciador Visual SPA
+      screens.forEach(screen => {
+        if (screen.id === screenId) {
+          screen.classList.add('active');
+          
+          // Re-dispara as animações de reveal do Tailwind
+          screen.querySelectorAll('.reveal-item-tw').forEach(item => {
+            item.style.animation = 'none';
+            item.offsetHeight; /* trigger reflow */
+            item.style.animation = '';
+          });
+        } else {
+          screen.classList.remove('active');
+        }
+      });
 
-    // Atualiza Bottom Nav
-    navItems.forEach(item => {
-      const target = item.getAttribute('data-screen');
-      if (target === 'login-screen' && (screenId === 'login-screen' || screenId === 'profile-screen' || screenId === 'admin-screen')) {
-        item.classList.add('active');
-        item.querySelector('i').className = "fa-solid fa-user-circle text-barber-red drop-shadow-[0_0_10px_rgba(196,30,58,0.4)]";
-      } else if (target === screenId) {
-        item.classList.add('active');
-        if (target === 'home-screen') item.querySelector('i').className = "fa-solid fa-house text-barber-red drop-shadow-[0_0_10px_rgba(196,30,58,0.4)]";
-        if (target === 'booking-screen') item.querySelector('i').className = "fa-solid fa-calendar-days text-barber-red drop-shadow-[0_0_10px_rgba(196,30,58,0.4)]";
-        if (target === 'reviews-screen') item.querySelector('i').className = "fa-solid fa-star-half-stroke text-barber-red drop-shadow-[0_0_10px_rgba(196,30,58,0.4)]";
-      } else {
-        item.classList.remove('active');
-        if (target === 'home-screen') item.querySelector('i').className = "fa-solid fa-house text-zinc-400";
-        if (target === 'booking-screen') item.querySelector('i').className = "fa-solid fa-calendar-days text-zinc-400";
-        if (target === 'reviews-screen') item.querySelector('i').className = "fa-solid fa-star-half-stroke text-zinc-400";
-        if (target === 'login-screen') item.querySelector('i').className = "fa-solid fa-user-circle text-zinc-400";
-      }
-    });
+      // Atualiza Bottom Nav
+      navItems.forEach(item => {
+        const target = item.getAttribute('data-screen');
+        if (target === 'login-screen' && (screenId === 'login-screen' || screenId === 'profile-screen' || screenId === 'admin-screen')) {
+          item.classList.add('active');
+          item.querySelector('i').className = "fa-solid fa-user-circle text-barber-red drop-shadow-[0_0_10px_rgba(196,30,58,0.4)]";
+        } else if (target === screenId) {
+          item.classList.add('active');
+          if (target === 'home-screen') item.querySelector('i').className = "fa-solid fa-house text-barber-red drop-shadow-[0_0_10px_rgba(196,30,58,0.4)]";
+          if (target === 'booking-screen') item.querySelector('i').className = "fa-solid fa-calendar-days text-barber-red drop-shadow-[0_0_10px_rgba(196,30,58,0.4)]";
+          if (target === 'reviews-screen') item.querySelector('i').className = "fa-solid fa-star-half-stroke text-barber-red drop-shadow-[0_0_10px_rgba(196,30,58,0.4)]";
+        } else {
+          item.classList.remove('active');
+          if (target === 'home-screen') item.querySelector('i').className = "fa-solid fa-house text-zinc-400";
+          if (target === 'booking-screen') item.querySelector('i').className = "fa-solid fa-calendar-days text-zinc-400";
+          if (target === 'reviews-screen') item.querySelector('i').className = "fa-solid fa-star-half-stroke text-zinc-400";
+          if (target === 'login-screen') item.querySelector('i').className = "fa-solid fa-user-circle text-zinc-400";
+        }
+      });
+    }
+
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        executeScreenSwitch();
+      });
+    } else {
+      executeScreenSwitch();
+    }
 
     appState.currentScreen = screenId;
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1420,5 +1432,19 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
 
   // Inicializa o roteamento SPA para a home screen
   navigateTo('home-screen');
+
+  // Loop de Bounce do Botão de Agendamento (Micro-Animação reativa controlada via JS)
+  function initBookingButtonBounce() {
+    const btn = document.getElementById('home-booking-cta');
+    if (!btn) return;
+    
+    // Dispara o pulinho a cada 3.5 segundos
+    setInterval(() => {
+      btn.classList.remove('animate-bounce-luxury');
+      btn.offsetHeight; // Forçar reflow para reiniciar a animação
+      btn.classList.add('animate-bounce-luxury');
+    }, 3500);
+  }
+  initBookingButtonBounce();
 
 });

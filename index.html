@@ -27,10 +27,11 @@
             'text-warm': '#F0EDE8',
           },
           fontFamily: {
-            cinzel: ['Cinzel', 'serif'],
+            display: ['Big Shoulders Display', 'sans-serif'],
+            cinzel: ['Big Shoulders Display', 'sans-serif'],
             cormorant: ['Cormorant Garamond', 'serif'],
             barlow: ['Barlow Condensed', 'sans-serif'],
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            sans: ['DM Sans', 'sans-serif'],
           }
         }
       }
@@ -59,7 +60,7 @@
 
       <!-- Logotipo Oficial (Trigger para Admin com 5 cliques) -->
       <div class="logo-wrapper cursor-pointer select-none transition-all duration-300 flex flex-col items-center justify-center active:scale-95" id="secret-admin-trigger" role="button" aria-label="Área administrativa">
-        <img src="logo.png" alt="JOTAGAAHBS Barbearia" class="w-48 object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
+        <img src="assets/images/logo.png" alt="JOTAGAAHBS Barbearia" class="w-48 h-auto object-contain logo-sharp drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
       </div>
 
       <!-- Botão Menu Hambúrguer (3 riscos de luxo vítreo) -->
@@ -99,11 +100,16 @@
       <section id="home-screen" class="app-screen active space-y-8">
         <!-- Hero Banner -->
         <article class="hero-section flex flex-col items-center text-center py-6 relative z-10" id="hero-banner">
-          <div class="hero-badge reveal-item-tw font-barlow text-[0.7rem] tracking-[3px] text-gold-accent border border-gold-accent/40 px-3 py-1 rounded-full uppercase bg-gold-accent/5 mb-5" id="hero-badge-tag">Membro Premium</div>
-          <h1 class="hero-title reveal-item-tw delay-1 font-cinzel text-3xl font-light tracking-[2px] leading-tight" id="hero-headline">CLUBE DE ESTILO. <br><span class="highlight-serif text-barber-red italic font-bold font-cormorant lowercase text-[2.4rem] block mt-1 tracking-normal">Sem Frescura.</span></h1>
-          <p class="hero-description reveal-item-tw delay-2 text-[0.8rem] uppercase tracking-[3px] font-light text-zinc-400 mt-4 max-w-[90%]" id="hero-subtext">FOCADO EM CORTES DE RESPEITO E DESIGN IMPECÁVEL.</p>
-          <button class="btn-premium btn-primary reveal-item-tw delay-3 mt-6 active:scale-95" id="home-booking-cta" aria-label="Agendar um horário agora">
-            <i class="fa-solid fa-calendar-check"></i> AGENDAR HORÁRIO
+          <div class="hero-badge reveal-item-tw font-barlow text-[0.7rem] tracking-[3px] text-gold-accent border border-gold-accent/40 px-3 py-1 rounded-full uppercase bg-gold-accent/5 mb-6" id="hero-badge-tag">Membro Premium</div>
+          <h1 class="hero-title reveal-item-tw delay-1 font-display font-black text-6xl tracking-[-0.03em] leading-[0.9] uppercase bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent" id="hero-headline">
+            CLUBE DE ESTILO.<br>
+            <span class="highlight-serif text-barber-red italic font-bold font-cormorant lowercase text-[3.2rem] block mt-2 tracking-normal bg-none bg-clip-border text-barber-red fill-current leading-none">sem frescura.</span>
+          </h1>
+          <p class="hero-description reveal-item-tw delay-2 text-[0.7rem] uppercase tracking-[0.3em] font-light text-zinc-500 mt-5 max-w-[90%] leading-relaxed" id="hero-subtext">
+            O ESTÚDIO DE COURO &amp; NEON EM TIETÊ.
+          </p>
+          <button class="btn-premium btn-primary reveal-item-tw delay-3 mt-8 active:scale-95 animate-bounce-luxury" id="home-booking-cta" aria-label="Agendar um horário agora">
+            <i class="fa-solid fa-calendar-check mr-2"></i> AGENDAR HORÁRIO
           </button>
         </article>
 
@@ -128,7 +134,7 @@
 
         <!-- Preview de Serviços (Ajuste Isométrico 3D) -->
         <section class="services-preview-section reveal-item-tw delay-5 space-y-5" id="services-preview">
-          <h2 class="section-title font-cinzel text-xl font-medium tracking-[3px] text-center" id="services-title">NOSSOS <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.45em]">Serviços</span></h2>
+          <h2 class="section-title font-display text-3xl font-black tracking-wider uppercase text-center" id="services-title">NOSSOS <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Serviços</span></h2>
           <div class="service-preview-list flex flex-col gap-4" id="services-preview-list">
             <!-- Cards com efeito isométrico tridimensional flutuante -->
             <article class="service-item-row isometric-grid-card flex justify-between items-center p-4 bg-zinc-950/60 backdrop-blur-md border border-white/10 rounded-xl">
@@ -160,7 +166,7 @@
 
         <!-- Horários de Funcionamento -->
         <section class="hours-section reveal-item-tw delay-5 space-y-5" id="business-hours-info">
-          <h2 class="section-title font-cinzel text-xl font-medium tracking-[3px] text-center" id="hours-title">GRADE DE <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.45em]">Horários</span></h2>
+          <h2 class="section-title font-display text-3xl font-black tracking-wider uppercase text-center" id="hours-title">GRADE DE <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Horários</span></h2>
           <div class="chrome-card chrome-border-premium rounded-2xl p-5 shadow-luxury-diffuse" id="hours-card">
             <div class="hours-table w-full flex flex-col divide-y divide-white/5" id="hours-list">
               <div class="hours-row flex justify-between py-3 text-sm">
@@ -181,7 +187,7 @@
 
         <!-- Endereço e Localização -->
         <section class="address-section reveal-item-tw delay-5 space-y-5" id="store-address-info">
-          <h2 class="section-title font-cinzel text-xl font-medium tracking-[3px] text-center" id="address-title">COMO <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.45em]">Chegar</span></h2>
+          <h2 class="section-title font-display text-3xl font-black tracking-wider uppercase text-center" id="address-title">COMO <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Chegar</span></h2>
           <div class="chrome-card chrome-border-premium rounded-2xl p-5 shadow-luxury-diffuse flex flex-col gap-4" id="address-details-card">
             <div class="map-placeholder w-full h-[150px] rounded-xl border border-white/10 relative overflow-hidden flex justify-content-center items-center" id="virtual-map">
               <i class="fa-solid fa-location-dot map-pin"></i>
@@ -202,7 +208,7 @@
            2. BOOKING SCREEN (PROTECTED ROUTE)
            ========================================== -->
       <section id="booking-screen" class="app-screen space-y-6">
-        <h2 class="section-title reveal-item-tw font-cinzel text-xl font-medium tracking-[3px] text-center" id="booking-screen-title">AGENDE SEU <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.45em]">Horário</span></h2>
+        <h2 class="section-title reveal-item-tw font-display text-3xl font-black tracking-wider uppercase text-center" id="booking-screen-title">AGENDE SEU <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Horário</span></h2>
         
         <div class="booking-flow-container flex flex-col gap-6" id="booking-flow">
           
@@ -324,7 +330,7 @@
            3. REVIEWS SCREEN
            ========================================== -->
       <section id="reviews-screen" class="app-screen space-y-8">
-        <h2 class="section-title reveal-item-tw font-cinzel text-xl font-medium tracking-[3px] text-center" id="reviews-screen-title">OPINIÃO DOS <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.45em]">Clientes</span></h2>
+        <h2 class="section-title reveal-item-tw font-display text-3xl font-black tracking-wider uppercase text-center" id="reviews-screen-title">OPINIÃO DOS <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Clientes</span></h2>
         
         <div class="reviews-summary reveal-item-tw delay-1 flex items-center gap-5 bg-studio-card/40 border border-white/5 rounded-2xl p-5 shadow-luxury-diffuse" id="reviews-general-summary">
           <div class="reviews-score-big text-[3rem] font-barlow text-gold-accent font-extrabold leading-none" id="avg-rating-value">5.0</div>
@@ -382,7 +388,7 @@
            4. TELA DE LOGIN / CADASTRO (PROTEGIDO)
            ========================================== -->
       <section id="login-screen" class="app-screen space-y-6">
-        <h2 class="section-title reveal-item-tw font-cinzel text-xl font-medium tracking-[3px] text-center" id="login-screen-title">ACESSE SUA <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.45em]">Conta</span></h2>
+        <h2 class="section-title reveal-item-tw font-display text-3xl font-black tracking-wider uppercase text-center" id="login-screen-title">ACESSE SUA <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Conta</span></h2>
         
         <div class="auth-card bg-studio-card/60 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-luxury-diffuse relative overflow-hidden reveal-item-tw delay-1" id="auth-card-box">
           <!-- Toggle Cliente / Admin -->
@@ -442,7 +448,7 @@
            5. PERFIL DO CLIENTE
            ========================================== -->
       <section id="profile-screen" class="app-screen space-y-6">
-        <h2 class="section-title reveal-item-tw font-cinzel text-xl font-medium tracking-[3px] text-center" id="profile-screen-title">SEU <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.45em]">Perfil</span></h2>
+        <h2 class="section-title reveal-item-tw font-display text-3xl font-black tracking-wider uppercase text-center" id="profile-screen-title">SEU <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Perfil</span></h2>
         
         <!-- Detalhes do Usuário -->
         <article class="profile-header-card reveal-item-tw delay-1 flex flex-col items-center text-center p-6 border border-white/10 rounded-2xl shadow-luxury-diffuse relative" id="client-profile-header">
@@ -472,7 +478,7 @@
         
         <!-- Dashboard Administrativo Liberado -->
         <div class="admin-dashboard-view space-y-6" id="admin-dashboard">
-          <h2 class="section-title reveal-item-tw font-cinzel text-xl font-medium tracking-[3px] text-center">PAINEL DE <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.45em]">Controle</span></h2>
+          <h2 class="section-title reveal-item-tw font-display text-3xl font-black tracking-wider uppercase text-center">PAINEL DE <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Controle</span></h2>
           
           <div class="admin-tabs reveal-item-tw delay-1 flex border-b border-white/5 mb-4" id="admin-tabs-nav">
             <button class="admin-tab-btn active flex-1 bg-none border-b-2 border-transparent py-3 text-xs tracking-wider font-barlow font-bold uppercase text-zinc-400 transition-all" data-tab="tab-bookings" id="tab-btn-bookings">Agendamentos</button>

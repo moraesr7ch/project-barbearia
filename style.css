@@ -4,13 +4,14 @@
    ========================================================================== */
 
 /* --- GOOGLE FONTS --- */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,500;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Barlow+Condensed:wght@900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@100..900&family=Cormorant+Garamond:ital,wght@1,300..700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Barlow+Condensed:wght@800;900&display=swap');
 
 /* --- CUSTOM VARIABLES --- */
 :root {
-  --font-cinzel: 'Cinzel', serif;
+  --font-cinzel: 'Big Shoulders Display', sans-serif;
+  --font-display: 'Big Shoulders Display', sans-serif;
   --font-cormorant: 'Cormorant Garamond', serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
   --font-barlow: 'Barlow Condensed', sans-serif;
 
   /* Gradientes Metálicos */
@@ -82,6 +83,33 @@ body::before {
   perspective: 1000px; /* Perspectiva CSS 3D */
 }
 
+/* Transições de Tela Fluidas da Apple (Fade-in & Slide Up) */
+.app-screen {
+  opacity: 0;
+  transform: translateY(15px) scale(0.98);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  display: none;
+}
+.app-screen.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Animação Bounce Luxury ("pulinho" de notificação reativo) */
+@keyframes pulseBounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.02);
+  }
+}
+.animate-bounce-luxury {
+  animation: pulseBounce 1.2s ease-in-out;
+}
+
 /* --- BARBER POLE DYNAMIC LINE --- */
 .barber-pole-line-dynamic {
   height: 4px;
@@ -139,8 +167,8 @@ body::before {
 }
 
 /* --- ESTILOS DE FONTES & UTILITÁRIOS --- */
-.font-cinzel {
-  font-family: var(--font-cinzel), serif;
+.font-cinzel, .font-display {
+  font-family: var(--font-display), sans-serif;
 }
 
 .font-cormorant {
@@ -149,6 +177,14 @@ body::before {
 
 .font-barlow {
   font-family: var(--font-barlow), sans-serif;
+}
+
+/* Logo Ultra Nítida e Sharp para Telas de Celulares */
+.logo-sharp {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 /* --- AJUSTE ISOMÉTRICO 3D (DESIGN SPELLS) --- */
@@ -263,6 +299,8 @@ body::before {
   transform: translateX(100%);
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 200;
+  border-top-left-radius: 2rem;
+  border-bottom-left-radius: 2rem;
 }
 
 .drawer-menu.active {
@@ -286,4 +324,139 @@ body::before {
 .drawer-overlay.active {
   opacity: 1;
   pointer-events: auto;
+}
+
+/* --- BOTÕES PREMIUM LUXUOSOS & CANTOS SUPER ARREDONDADOS --- */
+.btn-premium {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.8rem;
+  font-family: var(--font-barlow);
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-radius: 9999px !important; /* Totalmente arredondado estilo pílula */
+  transition: all 0.55s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer;
+  width: 100%;
+  border: 1px solid transparent;
+  outline: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Feedback tátil físico do iOS */
+.btn-premium:active, .booking-service-card:active, .isometric-grid-card:active {
+  transform: scale(0.95) translateY(1px) !important;
+  filter: brightness(0.92);
+}
+
+.btn-premium.btn-primary {
+  background: linear-gradient(135deg, #C41E3A 0%, #8A1024 100%) !important;
+  color: #F0EDE8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 
+    0 10px 25px rgba(196, 30, 58, 0.25), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.btn-premium.btn-primary:hover {
+  background: linear-gradient(135deg, #E62E4D 0%, #A81832 100%) !important;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 15px 30px rgba(196, 30, 58, 0.45), 
+    0 0 15px rgba(196, 30, 58, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+.btn-premium.btn-secondary {
+  background: rgba(20, 20, 20, 0.7) !important;
+  color: #F0EDE8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(10px);
+}
+
+.btn-premium.btn-secondary:hover {
+  background: rgba(30, 30, 30, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 15px 30px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+/* --- INPUTS PREMIUM SUPER ARREDONDADOS --- */
+.input-premium {
+  border-radius: 9999px !important; /* Estilo pílula */
+  padding: 0.8rem 1.5rem !important;
+  background-color: rgba(15, 15, 15, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  font-family: var(--font-body);
+  color: #F0EDE8 !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+}
+
+.input-premium:focus {
+  border-color: #C9973A !important; /* Foco Dourado */
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    0 0 15px rgba(201, 151, 58, 0.3) !important;
+}
+
+/* --- CARDS E UTENSÍLIOS SUPER ARREDONDADOS LUXUOSOS (CANTOS DE DESIGN SUAVE) --- */
+.isometric-grid-card, 
+.chrome-card, 
+.calendar-widget, 
+.receipt-card, 
+.reviews-summary, 
+.auth-card, 
+.profile-header-card, 
+.admin-block-form-card, 
+.admin-blocked-list-card,
+.review-item,
+.client-booking-item,
+.booking-service-card,
+.booking-admin-item,
+.info-card,
+.quick-info-row > div,
+.calendar-day-cell {
+  border-radius: 1.5rem !important;
+  transition: all 0.55s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Cantos arredondados na barra Bottom Nav */
+.nav-bottom-bar {
+  border-top-left-radius: 1.8rem !important;
+  border-top-right-radius: 1.8rem !important;
+}
+
+/* Borda Laser Neon Fina e Precisa de Design */
+.booking-service-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.booking-service-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, rgba(196, 30, 58, 0.4) 0%, rgba(27, 58, 140, 0.4) 100%) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.booking-service-card:hover::after, 
+.booking-service-card.ring-1::after {
+  opacity: 1;
 }
