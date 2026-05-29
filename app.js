@@ -47,6 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!localStorage.getItem('jota_clients')) {
     localStorage.setItem('jota_clients', JSON.stringify([]));
   }
+  if (!localStorage.getItem('jota_studio_config')) {
+    localStorage.setItem('jota_studio_config', JSON.stringify({ status: 'auto', rating: 5.0 }));
+  }
 
   /* ==========================================
      ESTADO GLOBAL DA APLICACAO
@@ -81,8 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Elementos do Home
   const homeBookingCta = document.getElementById('home-booking-cta');
   const homeViewServicesBtn = document.getElementById('home-view-services-btn');
-  const todayStatusText = document.getElementById('today-status-text');
-
   // Elementos do Booking
   const progressFill = document.getElementById('booking-progress-fill');
   const progressDots = document.querySelectorAll('.progress-step-dot');
@@ -391,17 +392,38 @@ document.addEventListener('DOMContentLoaded', () => {
     return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
   }
 
-  function updateTodayStatus() {
-    const today = new Date().getDay();
-    if (today === 0 || today === 1) {
-      todayStatusText.textContent = 'Fechado';
-      todayStatusText.style.color = 'var(--accent-red)';
-    } else {
-      todayStatusText.textContent = 'Aberto';
-      todayStatusText.style.color = '#25D366';
+  function updateStudioHomeDisplay() {
+    const config = JSON.parse(localStorage.getItem('jota_studio_config')) || { status: 'auto', rating: 5.0 };
+    
+    // 1. Atualizar Nota de Avaliação Minimalista
+    const ratingDisplay = document.getElementById('display-rating-value');
+    if (ratingDisplay) {
+      ratingDisplay.textContent = config.rating.toFixed(1);
+    }
+    
+    // 2. Atualizar Status de Funcionamento Minimalista
+    const statusDisplay = document.getElementById('display-status-value');
+    if (statusDisplay) {
+      if (config.status === 'open') {
+        statusDisplay.textContent = 'Aberto Agora';
+        statusDisplay.className = 'text-xs font-semibold text-green-500';
+      } else if (config.status === 'closed') {
+        statusDisplay.textContent = 'Fechado Agora';
+        statusDisplay.className = 'text-xs font-semibold text-barber-red';
+      } else {
+        // Status Automático
+        const today = new Date().getDay();
+        if (today === 0 || today === 1) {
+          statusDisplay.textContent = 'Fechado Agora';
+          statusDisplay.className = 'text-xs font-semibold text-barber-red';
+        } else {
+          statusDisplay.textContent = 'Aberto Agora';
+          statusDisplay.className = 'text-xs font-semibold text-green-500';
+        }
+      }
     }
   }
-  updateTodayStatus();
+  updateStudioHomeDisplay();
 
   /* ==========================================
      ROTEADOR SPA COM COBERTURA DE SEGURANÇA
@@ -466,20 +488,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const target = item.getAttribute('data-screen');
         if (target === 'login-screen' && (screenId === 'login-screen' || screenId === 'profile-screen' || screenId === 'admin-screen')) {
           item.classList.add('active');
-          item.querySelector('i').className = "fa-solid fa-user-circle text-barber-red drop-shadow-[0_0_10px_rgba(196,30,58,0.4)]";
         } else if (target === screenId) {
           item.classList.add('active');
-          if (target === 'home-screen') item.querySelector('i').className = "fa-solid fa-house text-barber-red drop-shadow-[0_0_10px_rgba(196,30,58,0.4)]";
-          if (target === 'booking-screen') item.querySelector('i').className = "fa-solid fa-calendar-days text-barber-red drop-shadow-[0_0_10px_rgba(196,30,58,0.4)]";
-          if (target === 'reviews-screen') item.querySelector('i').className = "fa-solid fa-star-half-stroke text-barber-red drop-shadow-[0_0_10px_rgba(196,30,58,0.4)]";
         } else {
           item.classList.remove('active');
-          if (target === 'home-screen') item.querySelector('i').className = "fa-solid fa-house text-zinc-400";
-          if (target === 'booking-screen') item.querySelector('i').className = "fa-solid fa-calendar-days text-zinc-400";
-          if (target === 'reviews-screen') item.querySelector('i').className = "fa-solid fa-star-half-stroke text-zinc-400";
-          if (target === 'login-screen') item.querySelector('i').className = "fa-solid fa-user-circle text-zinc-400";
         }
       });
+
+      // Gerenciador de visibilidade e reatividade (Floating Dock Nav & WhatsApp Pop-Up)
+      const bottomNav = document.getElementById('app-bottom-nav');
+      const whatsappBtn = document.getElementById('whatsapp-float-btn');
+      if (bottomNav && whatsappBtn) {
+        if (screenId === 'booking-screen' || screenId === 'login-screen' || screenId === 'profile-screen' || screenId === 'admin-screen') {
+          bottomNav.classList.add('nav-hidden');
+          whatsappBtn.classList.add('nav-hidden');
+        } else {
+          bottomNav.classList.remove('nav-hidden');
+          whatsappBtn.classList.remove('nav-hidden');
+        }
+      }
     }
 
     if (document.startViewTransition) {
@@ -1351,6 +1378,7 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
     }
 
     renderBlockedDates();
+    renderStudioStatusConfig();
   }
 
   function deleteBooking(id) {
@@ -1389,6 +1417,50 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
 
     renderBlockedDates();
   });
+
+  // Sincronizar inputs administrativos com o localStorage
+  function renderStudioStatusConfig() {
+    const config = JSON.parse(localStorage.getItem('jota_studio_config')) || { status: 'auto', rating: 5.0 };
+    const statusSelect = document.getElementById('admin-status-select');
+    const ratingInput = document.getElementById('admin-rating-input');
+    
+    if (statusSelect && ratingInput) {
+      statusSelect.value = config.status;
+      ratingInput.value = config.rating.toFixed(1);
+    }
+  }
+
+  // Vincular evento de salvar ajustes do estúdio
+  const btnSaveStudioConfig = document.getElementById('btn-save-studio-config');
+  if (btnSaveStudioConfig) {
+    btnSaveStudioConfig.addEventListener('click', (e) => {
+      e.preventDefault();
+      const statusSelect = document.getElementById('admin-status-select');
+      const ratingInput = document.getElementById('admin-rating-input');
+      
+      if (!statusSelect || !ratingInput) return;
+      
+      const statusVal = statusSelect.value;
+      const ratingVal = parseFloat(ratingInput.value);
+      
+      if (isNaN(ratingVal) || ratingVal < 1.0 || ratingVal > 5.0) {
+        showToast('A nota de avaliação deve ser um número entre 1.0 e 5.0.', 'error');
+        ratingInput.focus();
+        return;
+      }
+      
+      const config = {
+        status: statusVal,
+        rating: ratingVal
+      };
+      
+      localStorage.setItem('jota_studio_config', JSON.stringify(config));
+      showToast('Ajustes do estúdio salvos com sucesso!', 'success');
+      
+      // Atualizar a Home instantaneamente
+      updateStudioHomeDisplay();
+    });
+  }
 
   function renderBlockedDates() {
     adminBlockedDatesList.innerHTML = '';

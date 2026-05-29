@@ -100,36 +100,44 @@
       <section id="home-screen" class="app-screen active space-y-8">
         <!-- Hero Banner -->
         <article class="hero-section flex flex-col items-center text-center py-6 relative z-10" id="hero-banner">
-          <div class="hero-badge reveal-item-tw font-barlow text-[0.7rem] tracking-[3px] text-gold-accent border border-gold-accent/40 px-3 py-1 rounded-full uppercase bg-gold-accent/5 mb-6" id="hero-badge-tag">Membro Premium</div>
+          <div class="hero-badge reveal-item-tw font-barlow text-[0.7rem] tracking-[3px] text-gold-accent border border-gold-accent/40 px-3 py-1 rounded-full uppercase bg-gold-accent/5 mb-6" id="hero-badge-tag">barbearia Premium</div>
           <h1 class="hero-title reveal-item-tw delay-1 font-display font-black text-6xl tracking-[-0.03em] leading-[0.9] uppercase bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent" id="hero-headline">
-            CLUBE DE ESTILO.<br>
-            <span class="highlight-serif text-barber-red italic font-bold font-cormorant lowercase text-[3.2rem] block mt-2 tracking-normal bg-none bg-clip-border text-barber-red fill-current leading-none">sem frescura.</span>
+            CADA DETALHE<br>
+            <span class="highlight-serif text-barber-red italic font-bold font-cormorant lowercase text-[3.2rem] block mt-2 tracking-normal bg-none bg-clip-border text-barber-red fill-current leading-none">IMPORTA</span>
           </h1>
           <p class="hero-description reveal-item-tw delay-2 text-[0.7rem] uppercase tracking-[0.3em] font-light text-zinc-500 mt-5 max-w-[90%] leading-relaxed" id="hero-subtext">
-            O ESTÚDIO DE COURO &amp; NEON EM TIETÊ.
+            agende seu horário agora mesmo
           </p>
           <button class="btn-premium btn-primary reveal-item-tw delay-3 mt-8 active:scale-95 animate-bounce-luxury" id="home-booking-cta" aria-label="Agendar um horário agora">
             <i class="fa-solid fa-calendar-check mr-2"></i> AGENDAR HORÁRIO
           </button>
         </article>
 
-        <!-- Informações Rápidas -->
-        <div class="quick-info-row reveal-item-tw delay-4 grid grid-cols-3 gap-3 w-full" id="quick-info-container">
-          <div class="info-card flex flex-col items-center text-center bg-studio-card/40 backdrop-blur-md border border-white/5 rounded-xl p-3 shadow-lg" id="info-rating">
-            <i class="fa-solid fa-star text-gold-accent text-lg mb-1"></i>
-            <h4 class="font-barlow text-[0.7rem] tracking-wider uppercase text-zinc-400">Avaliação</h4>
-            <p class="gold-text-real text-sm mt-0.5">5.0 / 5.0</p>
+        <!-- Linha de Informações Rápidas Minimalistas (Estilo Apple/AirPods 4) -->
+        <div class="reveal-item-tw delay-4 flex items-center justify-center gap-6 py-2 px-6 bg-zinc-950/30 border border-white/5 rounded-full w-fit mx-auto shadow-inner backdrop-blur-sm" id="minimal-info-bar">
+          <!-- Avaliação -->
+          <div class="flex items-center gap-1.5" id="home-rating-display">
+            <i class="fa-solid fa-star text-gold-accent text-xs"></i>
+            <span class="text-xs font-semibold text-text-warm" id="display-rating-value">5.0</span>
           </div>
-          <div class="info-card flex flex-col items-center text-center bg-studio-card/40 backdrop-blur-md border border-white/5 rounded-xl p-3 shadow-lg" id="info-location">
-            <i class="fa-solid fa-map-location-dot text-gold-accent text-lg mb-1"></i>
-            <h4 class="font-barlow text-[0.7rem] tracking-wider uppercase text-zinc-400">Endereço</h4>
-            <p class="text-[0.75rem] font-medium text-text-warm mt-0.5">Tietê, SP</p>
+          
+          <!-- Divisor -->
+          <div class="h-3 w-[1px] bg-white/10"></div>
+          
+          <!-- Status de Funcionamento -->
+          <div class="flex items-center gap-1.5" id="home-status-display">
+            <i class="fa-solid fa-store text-gold-accent text-xs"></i>
+            <span class="text-xs font-semibold text-green-500" id="display-status-value">Aberto Agora</span>
           </div>
-          <div class="info-card flex flex-col items-center text-center bg-studio-card/40 backdrop-blur-md border border-white/5 rounded-xl p-3 shadow-lg" id="info-status">
-            <i class="fa-solid fa-door-open text-gold-accent text-lg mb-1"></i>
-            <h4 class="font-barlow text-[0.7rem] tracking-wider uppercase text-zinc-400">Hoje</h4>
-            <p id="today-status-text" class="text-[0.75rem] font-bold text-green-500 mt-0.5">Aberto</p>
-          </div>
+          
+          <!-- Divisor -->
+          <div class="h-3 w-[1px] bg-white/10"></div>
+          
+          <!-- Telefone/WhatsApp -->
+          <a href="https://wa.me/5515996406909" target="_blank" class="flex items-center gap-1.5 text-zinc-400 hover:text-text-warm transition-all" id="home-phone-display">
+            <i class="fa-solid fa-phone text-gold-accent text-xs"></i>
+            <span class="text-xs font-medium font-sans">(15) 99640-6909</span>
+          </a>
         </div>
 
         <!-- Preview de Serviços (Ajuste Isométrico 3D) -->
@@ -189,15 +197,17 @@
         <section class="address-section reveal-item-tw delay-5 space-y-5" id="store-address-info">
           <h2 class="section-title font-display text-3xl font-black tracking-wider uppercase text-center" id="address-title">COMO <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Chegar</span></h2>
           <div class="chrome-card chrome-border-premium rounded-2xl p-5 shadow-luxury-diffuse flex flex-col gap-4" id="address-details-card">
-            <div class="map-placeholder w-full h-[150px] rounded-xl border border-white/10 relative overflow-hidden flex justify-content-center items-center" id="virtual-map">
-              <i class="fa-solid fa-location-dot map-pin"></i>
-              <div class="map-location-tag absolute bottom-3 px-3 py-1 bg-black/90 border border-white/10 rounded text-[0.7rem] text-text-warm font-light">Tietê, SP</div>
-            </div>
+            <a href="https://www.google.com/maps/search/?api=1&query=Rua+Enok+Barreira+de+Macedo+444+Tiet%C3%AA+SP" target="_blank" class="map-placeholder w-full h-[160px] rounded-xl border border-white/10 relative overflow-hidden flex justify-content-center items-center hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer block" id="virtual-map" aria-label="Abrir localização no Google Maps">
+              <img src="assets/images/map.png" alt="Localização JOTAGAAHBS Barbearia" class="w-full h-full object-cover logo-sharp">
+              <div class="map-location-tag absolute bottom-3 left-3 px-3 py-1 bg-black/90 border border-white/10 rounded text-[0.7rem] text-text-warm font-light flex items-center gap-1.5 shadow-lg">
+                <i class="fa-solid fa-location-dot text-gold-accent"></i> Tietê, SP
+              </div>
+            </a>
             <div class="text-center" id="address-text-container">
               <p class="text-text-warm font-medium text-sm">Rua Enok Barreira de Macedo, 444</p>
               <p class="text-[0.8rem] text-zinc-400 mt-1 font-light">Tietê - SP | CEP 18200-000</p>
             </div>
-            <a href="https://maps.google.com/?q=Rua+Enok+Barreira+de+Macedo+444+Tiete+SP" target="_blank" class="btn-premium btn-secondary active:scale-95" id="address-gps-button" aria-label="Abrir no GPS Google Maps">
+            <a href="https://www.google.com/maps/search/?api=1&query=Rua+Enok+Barreira+de+Macedo+444+Tiet%C3%AA+SP" target="_blank" class="btn-premium btn-secondary active:scale-95" id="address-gps-button" aria-label="Abrir no GPS Google Maps">
               <i class="fa-solid fa-compass"></i> ABRIR NO GPS
             </a>
           </div>
@@ -482,7 +492,7 @@
           
           <div class="admin-tabs reveal-item-tw delay-1 flex border-b border-white/5 mb-4" id="admin-tabs-nav">
             <button class="admin-tab-btn active flex-1 bg-none border-b-2 border-transparent py-3 text-xs tracking-wider font-barlow font-bold uppercase text-zinc-400 transition-all" data-tab="tab-bookings" id="tab-btn-bookings">Agendamentos</button>
-            <button class="admin-tab-btn flex-1 bg-none border-b-2 border-transparent py-3 text-xs tracking-wider font-barlow font-bold uppercase text-zinc-400 transition-all" data-tab="tab-blocks" id="tab-btn-blocks">Bloqueios</button>
+            <button class="admin-tab-btn flex-1 bg-none border-b-2 border-transparent py-3 text-xs tracking-wider font-barlow font-bold uppercase text-zinc-400 transition-all" data-tab="tab-blocks" id="tab-btn-blocks">Ajustes &amp; Bloqueios</button>
           </div>
 
           <!-- Aba de Agendamentos -->
@@ -503,6 +513,31 @@
 
           <!-- Aba de Bloqueio de Datas/Horários -->
           <div class="admin-pane space-y-4" id="tab-blocks">
+            
+            <!-- Controle de Status e Nota do Estúdio -->
+            <div class="chrome-card chrome-border-premium rounded-2xl p-5 shadow-luxury-diffuse" id="admin-studio-status-card">
+              <div class="admin-card-header mb-3 border-b border-white/5 pb-2">
+                <h3 class="font-barlow tracking-wider uppercase font-bold text-sm text-text-warm">Controle do Estúdio</h3>
+              </div>
+              <form id="admin-studio-status-form" onsubmit="return false;" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="booking-form-group flex flex-col gap-1.5">
+                    <label for="admin-status-select" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">Funcionamento</label>
+                    <select id="admin-status-select" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner cursor-pointer" style="width: 100%;">
+                      <option value="auto">Automático</option>
+                      <option value="open">Aberto Agora</option>
+                      <option value="closed">Fechado</option>
+                    </select>
+                  </div>
+                  <div class="booking-form-group flex flex-col gap-1.5">
+                    <label for="admin-rating-input" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">Nota de Avaliação</label>
+                    <input type="number" id="admin-rating-input" step="0.1" min="1.0" max="5.0" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner" placeholder="Ex: 5.0" required>
+                  </div>
+                </div>
+                <button type="submit" class="btn-premium btn-primary active:scale-95 shadow-luxury-diffuse" id="btn-save-studio-config" aria-label="Salvar configurações do estúdio">SALVAR AJUSTES</button>
+              </form>
+            </div>
+
             <div class="chrome-card chrome-border-premium rounded-2xl p-5 shadow-luxury-diffuse" id="admin-block-form-card">
               <div class="admin-card-header mb-3 border-b border-white/5 pb-2">
                 <h3 class="font-barlow tracking-wider uppercase font-bold text-sm text-text-warm">Bloquear Dia Inteiro</h3>
@@ -536,22 +571,22 @@
     </main>
 
     <!-- Botão Flutuante do WhatsApp -->
-    <a href="https://wa.me/5515996406909?text=Ol%C3%A1%21+Gostaria+de+saber+mais+sobre+a+Barbearia+JOTAGAAHBS." target="_blank" class="whatsapp-float transition-all hover:scale-110 active:scale-90" id="whatsapp-float-btn" aria-label="Fale Conosco pelo WhatsApp">
-      <i class="fa-brands fa-whatsapp text-white"></i>
+    <a href="https://wa.me/5515996406909?text=Ol%C3%A1%21+acabei+de+reservar+meu+horario+." target="_blank" class="whatsapp-float transition-all" id="whatsapp-float-btn" aria-label="Fale Conosco pelo WhatsApp">
+      <i class="fa-brands fa-whatsapp"></i>
     </a>
 
     <!-- Barra de Navegação Inferior estilo App Nativo Glassmorphism (Menu Conta removido, agora estritamente operacional) -->
-    <nav class="nav-bottom-bar bg-zinc-900/90 backdrop-blur-lg border-t border-white/10 flex justify-around items-center z-[100] shadow-2xl" id="app-bottom-nav">
+    <nav class="nav-bottom-bar" id="app-bottom-nav">
       <a class="nav-item active active:scale-95" data-screen="home-screen" id="nav-home">
-        <i class="fa-solid fa-house text-zinc-400"></i>
+        <i class="fa-solid fa-house"></i>
         <span class="font-barlow font-bold">Início</span>
       </a>
       <a class="nav-item active:scale-95" data-screen="booking-screen" id="nav-booking">
-        <i class="fa-solid fa-calendar-days text-zinc-400"></i>
+        <i class="fa-solid fa-calendar-days"></i>
         <span class="font-barlow font-bold">Agendar</span>
       </a>
       <a class="nav-item active:scale-95" data-screen="reviews-screen" id="nav-reviews">
-        <i class="fa-solid fa-star-half-stroke text-zinc-400"></i>
+        <i class="fa-solid fa-star-half-stroke"></i>
         <span class="font-barlow font-bold">Avaliar</span>
       </a>
     </nav>

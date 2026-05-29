@@ -426,10 +426,153 @@ body::before {
   transition: all 0.55s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-/* Cantos arredondados na barra Bottom Nav */
+/* --- FLOATING DOCK NAV BAR (ESTILO DOCK PREMIUM FLUTUANTE) --- */
 .nav-bottom-bar {
-  border-top-left-radius: 1.8rem !important;
-  border-top-right-radius: 1.8rem !important;
+  position: fixed !important; /* Sempre fixa no viewport da tela */
+  bottom: 1.5rem !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: calc(100% - 2.5rem) !important;
+  max-width: 430px !important; /* Limitada à largura do container de 480px menos as margens laterais */
+  height: 68px !important;
+  background: rgba(12, 12, 12, 0.72) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 2.2rem !important; /* Totalmente arredondada como doca flutuante */
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.8),
+    0 10px 20px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+              opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  z-index: 150 !important;
+  display: flex !important;
+  justify-content: space-around !important;
+  align-items: center !important;
+  padding: 0 0.5rem !important;
+}
+
+/* Ocultação elástica suave preservando centralização */
+.nav-bottom-bar.nav-hidden {
+  transform: translate(-50%, 120px) scale(0.92) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Itens individuais de Navegação */
+.nav-item {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  color: #7A7A7A !important;
+  text-decoration: none !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer !important;
+  padding: 0.5rem !important;
+  border-radius: 1.2rem !important;
+  height: 100% !important;
+  flex: 1 !important;
+}
+
+.nav-item i {
+  font-size: 1.15rem !important;
+  color: #7A7A7A !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.nav-item span {
+  font-size: 0.62rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+  opacity: 0.65 !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  font-family: var(--font-barlow) !important;
+  font-weight: 800 !important;
+}
+
+.nav-item:hover, .nav-item.active {
+  color: #F0EDE8 !important;
+}
+
+.nav-item:hover i, .nav-item.active i {
+  color: #C41E3A !important; /* Vermelho Oficial reativo */
+  transform: translateY(-2px) !important;
+  filter: drop-shadow(0 0 8px rgba(196, 30, 58, 0.5)) !important;
+}
+
+.nav-item:hover span, .nav-item.active span {
+  color: #F0EDE8 !important;
+  opacity: 1 !important;
+}
+
+/* --- BOTÃO POP-UP WHATSAPP NO CANTO DIREITO (COMPATÍVEL COM VIEWPORT FIXO) --- */
+.whatsapp-float {
+  position: fixed !important;
+  width: 56px !important;
+  height: 56px !important;
+  background-color: #25D366 !important; /* Verde Oficial do WhatsApp */
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 
+    0 15px 30px rgba(37, 211, 102, 0.35),
+    0 5px 15px rgba(0, 0, 0, 0.4) !important;
+  color: #FFFFFF !important;
+  font-size: 1.7rem !important;
+  text-decoration: none !important;
+  z-index: 140 !important;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
+              bottom 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.3s ease !important;
+}
+
+/* Telas Desktop: Fixa em relação ao centro do container de 480px */
+@media (min-width: 481px) {
+  .whatsapp-float {
+    bottom: 7.2rem !important;
+    left: 50% !important;
+    transform: translateX(165px) !important; /* 240px (metade do container) - 28px (metade do botão) - margem */
+  }
+  .whatsapp-float.nav-hidden {
+    bottom: 2rem !important;
+  }
+  .whatsapp-float:hover {
+    transform: translateX(165px) translateY(-4px) scale(1.08) !important;
+    box-shadow: 
+      0 20px 40px rgba(37, 211, 102, 0.45),
+      0 8px 20px rgba(0, 0, 0, 0.5) !important;
+    background-color: #20BA5A !important;
+  }
+  .whatsapp-float:active {
+    transform: translateX(165px) translateY(-1px) scale(0.95) !important;
+    filter: brightness(0.9) !important;
+  }
+}
+
+/* Telas Mobile: Alinha pela lateral direita do celular */
+@media (max-width: 480px) {
+  .whatsapp-float {
+    bottom: 7.2rem !important;
+    right: 1.25rem !important;
+  }
+  .whatsapp-float.nav-hidden {
+    bottom: 2rem !important;
+  }
+  .whatsapp-float:hover {
+    transform: translateY(-4px) scale(1.08) !important;
+    box-shadow: 
+      0 20px 40px rgba(37, 211, 102, 0.45),
+      0 8px 20px rgba(0, 0, 0, 0.5) !important;
+    background-color: #20BA5A !important;
+  }
+  .whatsapp-float:active {
+    transform: translateY(-1px) scale(0.95) !important;
+    filter: brightness(0.9) !important;
+  }
 }
 
 /* Borda Laser Neon Fina e Precisa de Design */
