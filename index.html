@@ -546,8 +546,20 @@
               </div>
             </div>
 
-            <div class="bookings-list reveal-item-tw delay-3 flex flex-col gap-3" id="admin-bookings-list">
-              <!-- Preenchido via JS -->
+            <!-- Cortes Ativos -->
+            <div class="space-y-2.5 reveal-item-tw delay-3">
+              <h4 class="font-barlow text-[0.72rem] tracking-widest text-zinc-400 uppercase font-bold flex items-center gap-1.5 px-1"><i class="fa-solid fa-calendar text-gold-accent text-[0.8rem]"></i> Agendamentos Ativos</h4>
+              <div class="bookings-list flex flex-col gap-3" id="admin-bookings-list">
+                <!-- Preenchido via JS (apenas pendentes) -->
+              </div>
+            </div>
+
+            <!-- Cortes Concluídos -->
+            <div class="space-y-2.5 mt-6 reveal-item-tw delay-4">
+              <h4 class="font-barlow text-[0.72rem] tracking-widest text-zinc-400 uppercase font-bold flex items-center gap-1.5 px-1"><i class="fa-solid fa-circle-check text-green-500 text-[0.8rem]"></i> Cortes Concluídos</h4>
+              <div class="bookings-list flex flex-col gap-3 opacity-90" id="admin-bookings-list-completed">
+                <!-- Preenchido via JS (apenas concluídos) -->
+              </div>
             </div>
           </div>
 

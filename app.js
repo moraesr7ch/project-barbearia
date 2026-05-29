@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const adminTabBtns = document.querySelectorAll('.admin-tab-btn');
   const adminPanes = document.querySelectorAll('.admin-pane');
   const adminBookingsList = document.getElementById('admin-bookings-list');
-  const todayBookingsCount = document.getElementById('today-bookings-count');
+  const adminBookingsListCompleted = document.getElementById('admin-bookings-list-completed');
   const blockDateInput = document.getElementById('block-date-input');
   const btnBlockDate = document.getElementById('btn-block-date');
   const adminBlockedDatesList = document.getElementById('admin-blocked-dates-list');
@@ -557,11 +557,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const admin = isAdminAuthenticated();
 
     // 1. Proteger Rota de Agendamento
-    if (screenId === 'booking-screen' && !client) {
-      showToast('Por favor, crie uma conta para realizar o agendamento.', 'warning');
-      navigateTo('login-screen');
-      showAuthForm('register');
-      return;
+    if (screenId === 'booking-screen') {
+      if (!client) {
+        showToast('Por favor, crie uma conta para realizar o agendamento.', 'warning');
+        navigateTo('login-screen');
+        showAuthForm('register');
+        return;
+      }
+      
+      const config = DB.getStudioConfig();
+      if (config && config.status === 'closed') {
+        showToast('Aviso: A barbearia está fechada no momento, mas você pode agendar seu horário normalmente!', 'warning');
+      }
     }
 
     // 2. Redirecionamento inteligente de login
@@ -1472,6 +1479,7 @@ confirmado pelo aplicativo de luxo, aguardo o atendimento`
   function renderAdminDashboard() {
     const bookings = DB.getBookings();
     adminBookingsList.innerHTML = '';
+    if (adminBookingsListCompleted) adminBookingsListCompleted.innerHTML = '';
     
     const todayFormatted = formatDate(new Date());
     
@@ -1502,69 +1510,90 @@ confirmado pelo aplicativo de luxo, aguardo o atendimento`
       return a.time.localeCompare(b.time);
     });
 
-    if (sortedBookings.length === 0) {
-      adminBookingsList.innerHTML = '<p class="text-center text-xs text-zinc-500 py-6 reveal-item-tw">Sem reservas registradas no sistema.</p>';
+    const activeBookings = sortedBookings.filter(b => !b.completed);
+    const completedBookings = sortedBookings.filter(b => b.completed);
+
+    // Renderizar Agendamentos Ativos
+    if (activeBookings.length === 0) {
+      adminBookingsList.innerHTML = '<p class="text-center text-xs text-zinc-500 py-4 reveal-item-tw">Nenhum agendamento ativo.</p>';
     } else {
-      sortedBookings.forEach((bk, index) => {
-        const item = document.createElement('div');
-        const delayClass = index < 5 ? `delay-${index + 1}` : 'delay-5';
-        
-        const isToday = bk.date === todayFormatted;
-        const styleToday = isToday ? 'border-l-[3px] border-barber-red pl-3' : 'border-l border-white/10';
-
-        item.className = `booking-admin-item reveal-item-tw flex justify-between items-center p-4 border border-white/5 rounded-xl bg-zinc-900/60 backdrop-blur-sm ${styleToday} ${delayClass}`;
-        
-        item.innerHTML = `
-          <div class="booking-admin-info space-y-1">
-            <h4 class="font-cinzel text-xs font-semibold text-text-warm tracking-wider uppercase">${bk.clientName} ${isToday ? '<span class="text-barber-red font-barlow text-[0.65rem] font-black tracking-widest">[HOJE]</span>' : ''}</h4>
-            <p class="text-[0.8rem] text-zinc-400 font-semibold">${bk.serviceName} - <span class="text-gold-accent font-barlow font-bold">${formatPrice(bk.price)}</span></p>
-            <p class="text-[0.72rem] text-zinc-400 font-light flex items-center gap-1"><i class="fa-regular fa-calendar"></i> ${bk.date} às ${bk.time} (${bk.duration})</p>
-            <p class="text-[0.72rem] text-zinc-500 font-light flex items-center gap-1"><i class="fa-solid fa-phone"></i> ${bk.clientPhone}</p>
-          </div>
-          <div class="booking-admin-actions flex items-center gap-2">
-            ${bk.completed ? `
-              <span class="px-2 py-0.5 rounded-md bg-green-500/10 border border-green-500/30 text-[0.62rem] font-barlow font-bold text-green-400 flex items-center gap-1 uppercase tracking-wider shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-                <i class="fa-solid fa-circle-check text-[0.65rem]"></i> Pago
-              </span>
-              <button class="btn-admin-action undo w-8 h-8 rounded border border-white/10 flex justify-center items-center hover:bg-zinc-800 transition-all text-xs active:scale-90" data-id="${bk.id}" title="Reabrir Agendamento">
-                <i class="fa-solid fa-arrow-rotate-left text-zinc-400"></i>
-              </button>
-            ` : `
-              <button class="btn-admin-action complete w-8 h-8 rounded border border-white/10 flex justify-center items-center hover:bg-green-500 hover:border-green-500 transition-all text-xs active:scale-90" data-id="${bk.id}" title="Concluir Corte & Registrar Pagamento">
-                <i class="fa-solid fa-check text-text-warm"></i>
-              </button>
-            `}
-            <a href="https://wa.me/55${bk.clientPhone.replace(/\D/g, '')}?text=${encodeURIComponent('Olá ' + bk.clientName + ', gostaríamos de confirmar seu horário no dia ' + bk.date + ' às ' + bk.time + ' na JOTAGAAHBS Barbearia.')}" target="_blank" class="btn-admin-action whatsapp w-8 h-8 rounded border border-white/10 flex justify-center items-center hover:bg-green-500 hover:border-green-500 transition-all text-sm active:scale-90" title="Contatar Cliente">
-              <i class="fa-brands fa-whatsapp text-text-warm"></i>
-            </a>
-            <button class="btn-admin-action delete w-8 h-8 rounded border border-white/10 flex justify-center items-center hover:bg-barber-red hover:border-barber-red transition-all text-sm active:scale-90" data-id="${bk.id}" title="Cancelar Reserva">
-              <i class="fa-solid fa-trash-can text-text-warm"></i>
-            </button>
-          </div>
-        `;
-
-        if (!bk.completed) {
-          item.querySelector('.btn-admin-action.complete').addEventListener('click', () => {
-            toggleBookingCompletion(bk.id, true);
-          });
-        } else {
-          item.querySelector('.btn-admin-action.undo').addEventListener('click', () => {
-            toggleBookingCompletion(bk.id, false);
-          });
-        }
-
-        item.querySelector('.btn-admin-action.delete').addEventListener('click', () => {
-          if (confirm(`Deseja realmente cancelar a reserva de ${bk.clientName}?`)) {
-            deleteBooking(bk.id);
-          }
-        });
-
+      activeBookings.forEach((bk, index) => {
+        const item = createAdminBookingCard(bk, index, todayFormatted);
         adminBookingsList.appendChild(item);
       });
     }
 
+    // Renderizar Cortes Concluídos
+    if (adminBookingsListCompleted) {
+      if (completedBookings.length === 0) {
+        adminBookingsListCompleted.innerHTML = '<p class="text-center text-xs text-zinc-500 py-4 reveal-item-tw">Nenhum corte concluído hoje.</p>';
+      } else {
+        completedBookings.forEach((bk, index) => {
+          const item = createAdminBookingCard(bk, index, todayFormatted);
+          adminBookingsListCompleted.appendChild(item);
+        });
+      }
+    }
+
     renderBlockedDates();
     renderStudioStatusConfig();
+  }
+
+  function createAdminBookingCard(bk, index, todayFormatted) {
+    const item = document.createElement('div');
+    const delayClass = index < 5 ? `delay-${index + 1}` : 'delay-5';
+    
+    const isToday = bk.date === todayFormatted;
+    const styleToday = isToday ? 'border-l-[3px] border-barber-red pl-3' : 'border-l border-white/10';
+
+    item.className = `booking-admin-item reveal-item-tw flex justify-between items-center p-4 border border-white/5 rounded-xl bg-zinc-900/60 backdrop-blur-sm ${styleToday} ${delayClass}`;
+    
+    item.innerHTML = `
+      <div class="booking-admin-info space-y-1">
+        <h4 class="font-cinzel text-xs font-semibold text-text-warm tracking-wider uppercase">${bk.clientName} ${isToday ? '<span class="text-barber-red font-barlow text-[0.65rem] font-black tracking-widest">[HOJE]</span>' : ''}</h4>
+        <p class="text-[0.8rem] text-zinc-400 font-semibold">${bk.serviceName} - <span class="text-gold-accent font-barlow font-bold">${formatPrice(bk.price)}</span></p>
+        <p class="text-[0.72rem] text-zinc-400 font-light flex items-center gap-1"><i class="fa-regular fa-calendar"></i> ${bk.date} às ${bk.time} (${bk.duration})</p>
+        <p class="text-[0.72rem] text-zinc-500 font-light flex items-center gap-1"><i class="fa-solid fa-phone"></i> ${bk.clientPhone}</p>
+      </div>
+      <div class="booking-admin-actions flex items-center gap-2">
+        ${bk.completed ? `
+          <span class="px-2 py-0.5 rounded-md bg-green-500/10 border border-green-500/30 text-[0.62rem] font-barlow font-bold text-green-400 flex items-center gap-1 uppercase tracking-wider shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+            <i class="fa-solid fa-circle-check text-[0.65rem]"></i> Pago
+          </span>
+          <button class="btn-admin-action undo w-8 h-8 rounded border border-white/10 flex justify-center items-center hover:bg-zinc-800 transition-all text-xs active:scale-90" data-id="${bk.id}" title="Reabrir Agendamento">
+            <i class="fa-solid fa-arrow-rotate-left text-zinc-400"></i>
+          </button>
+        ` : `
+          <button class="btn-admin-action complete w-8 h-8 rounded border border-white/10 flex justify-center items-center hover:bg-green-500 hover:border-green-500 transition-all text-xs active:scale-90" data-id="${bk.id}" title="Concluir Corte & Registrar Pagamento">
+            <i class="fa-solid fa-check text-text-warm"></i>
+          </button>
+        `}
+        <a href="https://wa.me/55${bk.clientPhone.replace(/\D/g, '')}?text=${encodeURIComponent('Olá ' + bk.clientName + ', gostaríamos de confirmar seu horário no dia ' + bk.date + ' às ' + bk.time + ' na JOTAGAAHBS Barbearia.')}" target="_blank" class="btn-admin-action whatsapp w-8 h-8 rounded border border-white/10 flex justify-center items-center hover:bg-green-500 hover:border-green-500 transition-all text-sm active:scale-90" title="Contatar Cliente">
+          <i class="fa-brands fa-whatsapp text-text-warm"></i>
+        </a>
+        <button class="btn-admin-action delete w-8 h-8 rounded border border-white/10 flex justify-center items-center hover:bg-barber-red hover:border-barber-red transition-all text-sm active:scale-90" data-id="${bk.id}" title="Cancelar Reserva">
+          <i class="fa-solid fa-trash-can text-text-warm"></i>
+        </button>
+      </div>
+    `;
+
+    if (!bk.completed) {
+      item.querySelector('.btn-admin-action.complete').addEventListener('click', () => {
+        toggleBookingCompletion(bk.id, true);
+      });
+    } else {
+      item.querySelector('.btn-admin-action.undo').addEventListener('click', () => {
+        toggleBookingCompletion(bk.id, false);
+      });
+    }
+
+    item.querySelector('.btn-admin-action.delete').addEventListener('click', () => {
+      if (confirm(`Deseja realmente cancelar a reserva de ${bk.clientName}?`)) {
+        deleteBooking(bk.id);
+      }
+    });
+
+    return item;
   }
 
   function deleteBooking(id) {
@@ -1751,5 +1780,20 @@ confirmado pelo aplicativo de luxo, aguardo o atendimento`
     }, 3500);
   }
   initBookingButtonBounce();
+
+  // Checagem periódica da virada do dia para resetar o faturamento diário do dashboard automaticamente à meia-noite (00:00)
+  let lastCheckedDate = new Date().toDateString();
+  setInterval(() => {
+    const currentDate = new Date().toDateString();
+    if (currentDate !== lastCheckedDate) {
+      lastCheckedDate = currentDate;
+      // Se estiver logado e na tela administrativa, re-renderiza para resetar o faturamento de hoje
+      const adminScreen = document.getElementById('admin-screen');
+      if (adminScreen && adminScreen.classList.contains('active')) {
+        renderAdminDashboard();
+        showToast('Virada de dia detectada! O faturamento diário foi resetado para R$ 0,00.', 'info');
+      }
+    }
+  }, 10000); // Executa a verificação a cada 10 segundos
 
 });
