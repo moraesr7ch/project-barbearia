@@ -1796,4 +1796,31 @@ confirmado pelo aplicativo de luxo, aguardo o atendimento`
     }
   }, 10000); // Executa a verificação a cada 10 segundos
 
+  // Rotação Automática Contínua de Assinaturas (Carrossel Horizontal de Altíssimo Luxo)
+  function initSubscriptionsCarousel() {
+    const carousel = document.getElementById('subscriptions-carousel');
+    if (!carousel) return;
+
+    // Pausar rotação no hover ou toque
+    let isHovered = false;
+    carousel.addEventListener('mouseenter', () => isHovered = true);
+    carousel.addEventListener('mouseleave', () => isHovered = false);
+    carousel.addEventListener('touchstart', () => isHovered = true, { passive: true });
+    carousel.addEventListener('touchend', () => {
+      setTimeout(() => { isHovered = false; }, 2500); // Pequeno delay de 2.5s antes de retomar
+    });
+
+    setInterval(() => {
+      if (isHovered) return;
+      
+      const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+      if (carousel.scrollLeft >= maxScroll - 1) {
+        carousel.scrollLeft = 0; // Volta para o início
+      } else {
+        carousel.scrollLeft += 0.6; // Deslocamento de 0.6px contínuo e ultra-suave (Marquee moderno)
+      }
+    }, 20); // Executa a 50fps para parecer aceleração gráfica de hardware
+  }
+  initSubscriptionsCarousel();
+
 });

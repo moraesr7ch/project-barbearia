@@ -284,6 +284,11 @@ body::before {
   background: rgba(201, 151, 58, 0.4);
 }
 
+/* Ocultar barra de rolagem horizontal do carrossel no Chrome/Safari/Edge */
+.subscriptions-carousel::-webkit-scrollbar {
+  display: none !important;
+}
+
 /* --- SIDE DRAWER MENU (HAMBÚRGUER GAVETA) --- */
 .drawer-menu {
   position: fixed;
