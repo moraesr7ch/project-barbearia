@@ -33,23 +33,120 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   /* ==========================================
-     INICIALIZAÇÃO DO BANCO DE DADOS LOCAL
+     DATABASE / MÓDULO DE BANCO DE DADOS MODULAR
      ========================================== */
-  if (!localStorage.getItem('barber_reviews')) {
-    localStorage.setItem('barber_reviews', JSON.stringify(DEFAULT_REVIEWS));
-  }
-  if (!localStorage.getItem('barber_bookings')) {
-    localStorage.setItem('barber_bookings', JSON.stringify([]));
-  }
-  if (!localStorage.getItem('barber_blocked_dates')) {
-    localStorage.setItem('barber_blocked_dates', JSON.stringify([]));
-  }
-  if (!localStorage.getItem('jota_clients')) {
-    localStorage.setItem('jota_clients', JSON.stringify([]));
-  }
-  if (!localStorage.getItem('jota_studio_config')) {
-    localStorage.setItem('jota_studio_config', JSON.stringify({ status: 'auto', rating: 5.0 }));
-  }
+  const DB = {
+    init() {
+      if (!localStorage.getItem('barber_reviews')) {
+        localStorage.setItem('barber_reviews', JSON.stringify(DEFAULT_REVIEWS));
+      }
+      if (!localStorage.getItem('barber_bookings')) {
+        localStorage.setItem('barber_bookings', JSON.stringify([]));
+      }
+      if (!localStorage.getItem('barber_blocked_dates')) {
+        localStorage.setItem('barber_blocked_dates', JSON.stringify([]));
+      }
+      if (!localStorage.getItem('jota_studio_config')) {
+        localStorage.setItem('jota_studio_config', JSON.stringify({ status: 'auto', rating: 5.0 }));
+      }
+      
+      // Inicialização do Administrador e Clientes no DB
+      let clients = JSON.parse(localStorage.getItem('jota_clients')) || [];
+      const adminExists = clients.some(c => c.email === 'admin@jotagaahbs.com.br');
+      if (!adminExists) {
+        clients.push({
+          name: 'Jota Administrador',
+          email: 'admin@jotagaahbs.com.br',
+          phone: '(15) 99999-9999',
+          password: 'jota2024',
+          role: 'admin'
+        });
+        localStorage.setItem('jota_clients', JSON.stringify(clients));
+      }
+    },
+
+    getClients() {
+      return JSON.parse(localStorage.getItem('jota_clients')) || [];
+    },
+
+    saveClient(client) {
+      const clients = this.getClients();
+      const emailExists = clients.some(c => c.email === client.email);
+      if (emailExists) return false;
+      
+      const newClient = {
+        ...client,
+        role: client.role || 'client'
+      };
+      
+      clients.push(newClient);
+      localStorage.setItem('jota_clients', JSON.stringify(clients));
+      return newClient;
+    },
+
+    authenticateUser(email, password) {
+      const clients = this.getClients();
+      const user = clients.find(c => c.email === email && c.password === password);
+      return user || null;
+    },
+
+    getReviews() {
+      return JSON.parse(localStorage.getItem('barber_reviews')) || [];
+    },
+
+    saveReview(review) {
+      const reviews = this.getReviews();
+      reviews.push(review);
+      localStorage.setItem('barber_reviews', JSON.stringify(reviews));
+      return reviews;
+    },
+
+    getBookings() {
+      return JSON.parse(localStorage.getItem('barber_bookings')) || [];
+    },
+
+    saveBooking(booking) {
+      const bookings = this.getBookings();
+      bookings.push(booking);
+      localStorage.setItem('barber_bookings', JSON.stringify(bookings));
+      return bookings;
+    },
+
+    updateBookings(bookingsList) {
+      localStorage.setItem('barber_bookings', JSON.stringify(bookingsList));
+    },
+
+    getBlockedDates() {
+      return JSON.parse(localStorage.getItem('barber_blocked_dates')) || [];
+    },
+
+    saveBlockedDate(dateStr) {
+      const blocked = this.getBlockedDates();
+      if (!blocked.includes(dateStr)) {
+        blocked.push(dateStr);
+        localStorage.setItem('barber_blocked_dates', JSON.stringify(blocked));
+      }
+      return blocked;
+    },
+
+    removeBlockedDate(dateStr) {
+      let blocked = this.getBlockedDates();
+      blocked = blocked.filter(d => d !== dateStr);
+      localStorage.setItem('barber_blocked_dates', JSON.stringify(blocked));
+      return blocked;
+    },
+
+    getStudioConfig() {
+      return JSON.parse(localStorage.getItem('jota_studio_config')) || { status: 'auto', rating: 5.0 };
+    },
+
+    saveStudioConfig(config) {
+      localStorage.setItem('jota_studio_config', JSON.stringify(config));
+    }
+  };
+
+  // Inicializa o banco de dados
+  DB.init();
 
   /* ==========================================
      ESTADO GLOBAL DA APLICACAO
@@ -128,21 +225,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCloseDrawer = document.getElementById('btn-close-drawer');
   const drawerMenuOptions = document.getElementById('drawer-menu-options');
   
-  // Toggle
-  const authToggle = document.getElementById('auth-toggle');
-  const toggleBtnClient = document.getElementById('toggle-btn-client');
-  const toggleBtnAdmin = document.getElementById('toggle-btn-admin');
-  
   // Formulários
   const formClientLogin = document.getElementById('form-client-login');
   const formClientRegister = document.getElementById('form-client-register');
-  const formAdminLogin = document.getElementById('form-admin-login');
   
   // Links de navegação interna auth
   const linkToRegister = document.getElementById('link-to-register');
   const linkToLogin = document.getElementById('link-to-login');
 
-  // Inputs Cliente Login
+  // Inputs Cliente/Admin Login Unificado
   const clientLoginEmailInput = document.getElementById('client-login-email');
   const clientLoginPasswordInput = document.getElementById('client-login-password');
   const btnExecuteClientLogin = document.getElementById('btn-execute-client-login');
@@ -153,10 +244,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const clientRegPhoneInput = document.getElementById('client-reg-phone');
   const clientRegPasswordInput = document.getElementById('client-reg-password');
   const btnExecuteClientRegister = document.getElementById('btn-execute-client-register');
-
-  // Inputs Admin Login
-  const adminLoginPasswordInput = document.getElementById('admin-login-password');
-  const btnExecuteAdminLogin = document.getElementById('btn-execute-admin-login');
 
   // Elementos do Perfil do Cliente
   const profileClientDisplayName = document.getElementById('profile-client-display-name');
@@ -175,6 +262,39 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnBlockDate = document.getElementById('btn-block-date');
   const adminBlockedDatesList = document.getElementById('admin-blocked-dates-list');
   const btnLogoutAdmin = document.getElementById('btn-logout-admin');
+
+  /* ==========================================
+     MÁSCARA DE TELEFONE BRASILEIRA (DDI 55 + 11 DÍGITOS)
+     ========================================== */
+  function applyPhoneMask(input) {
+    if (!input) return;
+    input.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\D/g, "");
+      
+      if (value.startsWith("55") && value.length > 11) {
+        value = value.substring(2);
+      }
+      
+      value = value.substring(0, 11);
+
+      let formatted = "";
+      if (value.length > 0) {
+        formatted += "(" + value.substring(0, 2);
+      }
+      if (value.length > 2) {
+        formatted += ") " + value.substring(2, 7);
+      }
+      if (value.length > 7) {
+        formatted += "-" + value.substring(7, 11);
+      }
+      
+      e.target.value = formatted;
+    });
+  }
+
+  // Inicializa as máscaras nos campos de celular
+  applyPhoneMask(clientRegPhoneInput);
+  applyPhoneMask(inputBookingPhone);
 
   /* ==========================================
      FUNÇÕES DE ACESSO A SESSÕES DO LOCALSTORAGE
@@ -269,9 +389,13 @@ document.addEventListener('DOMContentLoaded', () => {
         ? (names[0][0] + names[names.length - 1][0]).toUpperCase()
         : names[0].substring(0, 2).toUpperCase();
         
+      const avatarHtml = client.avatar 
+        ? `<img src="${client.avatar}" class="w-8 h-8 rounded-full object-cover border border-text-warm shadow-md flex-shrink-0" alt="Avatar">`
+        : `<div class="w-8 h-8 rounded-full bg-gradient-to-tr from-zinc-200 via-neutral-400 to-zinc-200 text-black flex justify-center items-center text-xs font-cinzel font-bold border border-text-warm shadow-md flex-shrink-0">${initials}</div>`;
+
       drawerMenuOptions.innerHTML = `
         <div class="px-4 py-3 bg-zinc-950/60 border border-white/5 rounded-xl mb-2 flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-zinc-200 to-zinc-400 text-black flex justify-center items-center text-xs font-cinzel font-bold border border-text-warm">${initials}</div>
+          ${avatarHtml}
           <div>
             <p class="text-[0.65rem] text-zinc-500 uppercase tracking-wider font-barlow font-bold">Olá,</p>
             <p class="text-xs text-text-warm font-cinzel font-semibold">${firstName}</p>
@@ -393,7 +517,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateStudioHomeDisplay() {
-    const config = JSON.parse(localStorage.getItem('jota_studio_config')) || { status: 'auto', rating: 5.0 };
+    const config = DB.getStudioConfig();
     
     // 1. Atualizar Nota de Avaliação Minimalista
     const ratingDisplay = document.getElementById('display-rating-value');
@@ -436,9 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (screenId === 'booking-screen' && !client) {
       showToast('Por favor, crie uma conta para realizar o agendamento.', 'warning');
       navigateTo('login-screen');
-      setAuthMode('client');
-      formClientLogin.classList.add('d-none');
-      formClientRegister.classList.remove('d-none');
+      showAuthForm('register');
       return;
     }
 
@@ -570,45 +692,28 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ==========================================
-     SISTEMA DE AUTENTICAÇÃO DUPLA (CLIENTE / ADMIN)
+     SISTEMA DE AUTENTICAÇÃO UNIFICADA E CADASTRO
      ========================================== */
   
-  function setAuthMode(mode) {
-    const activeClass = "active flex-1 bg-gradient-to-r text-white font-barlow tracking-wider font-bold shadow-lg";
-    const inactiveClass = "flex-1 bg-none text-zinc-500 font-barlow tracking-wider font-bold";
-
-    if (mode === 'client') {
-      toggleBtnClient.className = `auth-toggle-btn py-2 text-sm rounded transition-all duration-300 ${activeClass} from-barber-red to-red-900 shadow-red-900/35`;
-      toggleBtnClient.setAttribute('data-mode', 'client');
-      toggleBtnAdmin.className = `auth-toggle-btn py-2 text-sm rounded transition-all duration-300 ${inactiveClass}`;
-      
-      formClientLogin.classList.remove('d-none');
-      formAdminLogin.classList.add('d-none');
-      formClientRegister.classList.add('d-none');
-    } else if (mode === 'admin') {
-      toggleBtnClient.className = `auth-toggle-btn py-2 text-sm rounded transition-all duration-300 ${inactiveClass}`;
-      toggleBtnAdmin.className = `auth-toggle-btn py-2 text-sm rounded transition-all duration-300 ${activeClass} from-barber-blue to-cyan-900 shadow-blue-900/35`;
-      toggleBtnAdmin.setAttribute('data-mode', 'admin');
-      
-      formClientLogin.classList.add('d-none');
-      formAdminLogin.classList.remove('d-none');
-      formClientRegister.classList.add('d-none');
+  function showAuthForm(formType) {
+    if (formType === 'login') {
+      formClientLogin.classList.remove('hidden');
+      formClientRegister.classList.add('hidden');
+    } else if (formType === 'register') {
+      formClientLogin.classList.add('hidden');
+      formClientRegister.classList.remove('hidden');
     }
   }
 
-  toggleBtnClient.addEventListener('click', () => setAuthMode('client'));
-  toggleBtnAdmin.addEventListener('click', () => setAuthMode('admin'));
-  // Inicialização padrão do toggle
-  setAuthMode('client');
+  // Inicialização padrão do formulário
+  showAuthForm('login');
 
   linkToRegister.addEventListener('click', () => {
-    formClientLogin.classList.add('d-none');
-    formClientRegister.classList.remove('d-none');
+    showAuthForm('register');
   });
 
   linkToLogin.addEventListener('click', () => {
-    formClientLogin.classList.remove('d-none');
-    formClientRegister.classList.add('d-none');
+    showAuthForm('login');
   });
 
   // CADASTRO DE CLIENTE
@@ -629,8 +734,9 @@ document.addEventListener('DOMContentLoaded', () => {
       clientRegEmailInput.focus();
       return;
     }
-    if (!phone || phone.length < 14) {
-      showToast('Preencha seu celular WhatsApp.', 'error');
+    const cleanPhone = phone.replace(/\D/g, "");
+    if (cleanPhone.length !== 11) {
+      showToast('Insira um celular válido com DDD e 9 dígitos (total de 11 dígitos, Ex: (15) 99999-9999).', 'error');
       clientRegPhoneInput.focus();
       return;
     }
@@ -640,18 +746,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const clients = JSON.parse(localStorage.getItem('jota_clients')) || [];
-    const emailExists = clients.some(c => c.email === email);
+    const newClient = DB.saveClient({ name, email, phone, password, role: 'client' });
 
-    if (emailExists) {
+    if (!newClient) {
       showToast('E-mail já cadastrado.', 'error');
       clientRegEmailInput.focus();
       return;
     }
-
-    const newClient = { name, email, phone, password };
-    clients.push(newClient);
-    localStorage.setItem('jota_clients', JSON.stringify(clients));
 
     setLoggedClient(newClient);
     showToast('Cadastro realizado com sucesso! Bem-vindo.', 'success');
@@ -664,7 +765,7 @@ document.addEventListener('DOMContentLoaded', () => {
     navigateTo('profile-screen');
   });
 
-  // LOGIN DE CLIENTE
+  // LOGIN UNIFICADO (CLIENTES E BARBEIRO/ADMIN)
   btnExecuteClientLogin.addEventListener('click', (e) => {
     e.preventDefault();
     const email = clientLoginEmailInput.value.trim().toLowerCase();
@@ -675,17 +776,29 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const clients = JSON.parse(localStorage.getItem('jota_clients')) || [];
-    const client = clients.find(c => c.email === email && c.password === password);
+    const user = DB.authenticateUser(email, password);
 
-    if (client) {
-      setLoggedClient(client);
-      showToast(`Bem-vindo, ${client.name.split(' ')[0]}!`, 'success');
-      
-      clientLoginEmailInput.value = '';
-      clientLoginPasswordInput.value = '';
-      
-      navigateTo('profile-screen');
+    if (user) {
+      if (user.role === 'admin') {
+        // Fluxo de Login do Barbeiro / Admin
+        setAdminAuthenticated(true);
+        updateNavProfileBar();
+        showToast('Painel administrativo autenticado com sucesso!', 'success');
+        
+        clientLoginEmailInput.value = '';
+        clientLoginPasswordInput.value = '';
+        
+        navigateTo('admin-screen');
+      } else {
+        // Fluxo de Login do Cliente
+        setLoggedClient(user);
+        showToast(`Bem-vindo, ${user.name.split(' ')[0]}!`, 'success');
+        
+        clientLoginEmailInput.value = '';
+        clientLoginPasswordInput.value = '';
+        
+        navigateTo('profile-screen');
+      }
     } else {
       showToast('E-mail ou senha incorretos.', 'error');
     }
@@ -698,24 +811,6 @@ document.addEventListener('DOMContentLoaded', () => {
     navigateTo('home-screen');
   });
 
-  // LOGIN DE ADMINISTRADOR
-  btnExecuteAdminLogin.addEventListener('click', (e) => {
-    e.preventDefault();
-    const password = adminLoginPasswordInput.value;
-
-    if (password === 'jota2024') {
-      setAdminAuthenticated(true);
-      updateNavProfileBar();
-      showToast('Painel administrativo autenticado!', 'success');
-      adminLoginPasswordInput.value = '';
-      navigateTo('admin-screen');
-    } else {
-      showToast('Senha incorreta.', 'error');
-      adminLoginPasswordInput.value = '';
-      adminLoginPasswordInput.focus();
-    }
-  });
-
   // LOGOUT DE ADMINISTRADOR
   btnLogoutAdmin.addEventListener('click', () => {
     setAdminAuthenticated(false);
@@ -724,7 +819,7 @@ document.addEventListener('DOMContentLoaded', () => {
     navigateTo('home-screen');
   });
 
-  // GATILHO SECRETO
+  // GATILHO SECRETO PARA A TELA DE LOGIN
   logoTrigger.addEventListener('click', () => {
     logoClickCount++;
     
@@ -739,9 +834,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (logoClickCount === 5) {
       logoClickCount = 0;
-      showToast('Painel de login administrativo ativado!', 'success');
+      showToast('Acesso administrativo ativado. Faça login com seus dados de Barbeiro.', 'success');
       navigateTo('login-screen');
-      setAuthMode('admin');
+      showAuthForm('login');
     }
   });
 
@@ -757,14 +852,30 @@ document.addEventListener('DOMContentLoaded', () => {
     profileClientDisplayName.textContent = client.name;
     profileClientDisplayEmail.textContent = client.email;
     
-    const names = client.name.split(' ');
-    const initials = names.length > 1 
-      ? (names[0][0] + names[names.length - 1][0]).toUpperCase()
-      : names[0].substring(0, 2).toUpperCase();
-    profileAvatarInitials.textContent = initials;
+    const profileAvatarText = document.getElementById('profile-avatar-text');
+    const profileAvatarImg = document.getElementById('profile-avatar-img');
+    
+    if (client.avatar) {
+      if (profileAvatarText) profileAvatarText.classList.add('hidden');
+      if (profileAvatarImg) {
+        profileAvatarImg.src = client.avatar;
+        profileAvatarImg.classList.remove('hidden');
+      }
+    } else {
+      const names = client.name.split(' ');
+      const initials = names.length > 1 
+        ? (names[0][0] + names[names.length - 1][0]).toUpperCase()
+        : names[0].substring(0, 2).toUpperCase();
+      
+      if (profileAvatarText) {
+        profileAvatarText.textContent = initials;
+        profileAvatarText.classList.remove('hidden');
+      }
+      if (profileAvatarImg) profileAvatarImg.classList.add('hidden');
+    }
 
     clientPersonalBookingsList.innerHTML = '';
-    const bookings = JSON.parse(localStorage.getItem('barber_bookings')) || [];
+    const bookings = DB.getBookings();
     const personalBookings = bookings.filter(b => b.clientEmail === client.email || b.clientPhone === client.phone);
 
     if (personalBookings.length === 0) {
@@ -854,7 +965,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
     calendarCurrentMonthText.textContent = `${monthNames[month]} ${year}`;
 
-    const blockedDates = JSON.parse(localStorage.getItem('barber_blocked_dates')) || [];
+    const blockedDates = DB.getBlockedDates();
     const todayStr = new Date().toDateString();
 
     for (let i = 0; i < firstDayIndex; i++) {
@@ -952,7 +1063,7 @@ document.addEventListener('DOMContentLoaded', () => {
       slots.push(`${String(hour).padStart(2, '0')}:00`);
     }
 
-    const bookings = JSON.parse(localStorage.getItem('barber_bookings')) || [];
+    const bookings = DB.getBookings();
     const selectedDateFormatted = formatDate(appState.booking.selectedDate);
     const occupiedTimes = bookings
       .filter(b => b.date === selectedDateFormatted)
@@ -1104,8 +1215,9 @@ document.addEventListener('DOMContentLoaded', () => {
         inputBookingName.focus();
         return;
       }
-      if (!phone || phone.length < 14) {
-        showToast('Insira seu celular WhatsApp.', 'error');
+      const cleanPhone = phone.replace(/\D/g, "");
+      if (cleanPhone.length !== 11) {
+        showToast('Insira um celular válido com DDD e 9 dígitos (total de 11 dígitos, Ex: (15) 99999-9999).', 'error');
         inputBookingPhone.focus();
         return;
       }
@@ -1146,9 +1258,7 @@ document.addEventListener('DOMContentLoaded', () => {
       createdAt: new Date().toISOString()
     };
 
-    const currentBookings = JSON.parse(localStorage.getItem('barber_bookings')) || [];
-    currentBookings.push(newBooking);
-    localStorage.setItem('barber_bookings', JSON.stringify(currentBookings));
+    DB.saveBooking(newBooking);
 
     const whatsappText = encodeURIComponent(
 `💈 *JOTAGAAHBS Barbearia por Assinatura* 💈
@@ -1191,7 +1301,7 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
   
   function renderReviews() {
     reviewsListContainer.innerHTML = '';
-    const reviews = JSON.parse(localStorage.getItem('barber_reviews')) || [];
+    const reviews = DB.getReviews();
     
     if (reviews.length > 0) {
       const sum = reviews.reduce((acc, curr) => acc + curr.score, 0);
@@ -1285,9 +1395,7 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
       date: formatDate(new Date())
     };
 
-    const currentReviews = JSON.parse(localStorage.getItem('barber_reviews')) || [];
-    currentReviews.push(newRev);
-    localStorage.setItem('barber_reviews', JSON.stringify(currentReviews));
+    DB.saveReview(newRev);
 
     showToast('Agradecemos imensamente seu feedback!', 'success');
 
@@ -1325,7 +1433,7 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
   });
 
   function renderAdminDashboard() {
-    const bookings = JSON.parse(localStorage.getItem('barber_bookings')) || [];
+    const bookings = DB.getBookings();
     adminBookingsList.innerHTML = '';
     
     const todayFormatted = formatDate(new Date());
@@ -1358,7 +1466,7 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
             <p class="text-[0.72rem] text-zinc-500 font-light flex items-center gap-1"><i class="fa-solid fa-phone"></i> ${bk.clientPhone}</p>
           </div>
           <div class="booking-admin-actions flex gap-2">
-            <a href="https://wa.me/${bk.clientPhone.replace(/\D/g, '')}?text=${encodeURIComponent('Olá ' + bk.clientName + ', gostaríamos de confirmar seu horário no dia ' + bk.date + ' às ' + bk.time + ' na JOTAGAAHBS Barbearia.')}" target="_blank" class="btn-admin-action whatsapp w-8 h-8 rounded border border-white/10 flex justify-center items-center hover:bg-green-500 hover:border-green-500 transition-all text-sm active:scale-90" title="Contatar Cliente">
+            <a href="https://wa.me/55${bk.clientPhone.replace(/\D/g, '')}?text=${encodeURIComponent('Olá ' + bk.clientName + ', gostaríamos de confirmar seu horário no dia ' + bk.date + ' às ' + bk.time + ' na JOTAGAAHBS Barbearia.')}" target="_blank" class="btn-admin-action whatsapp w-8 h-8 rounded border border-white/10 flex justify-center items-center hover:bg-green-500 hover:border-green-500 transition-all text-sm active:scale-90" title="Contatar Cliente">
               <i class="fa-brands fa-whatsapp text-text-warm"></i>
             </a>
             <button class="btn-admin-action delete w-8 h-8 rounded border border-white/10 flex justify-center items-center hover:bg-barber-red hover:border-barber-red transition-all text-sm active:scale-90" data-id="${bk.id}" title="Cancelar Reserva">
@@ -1382,9 +1490,9 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
   }
 
   function deleteBooking(id) {
-    let bookings = JSON.parse(localStorage.getItem('barber_bookings')) || [];
+    let bookings = DB.getBookings();
     bookings = bookings.filter(b => b.id !== id);
-    localStorage.setItem('barber_bookings', JSON.stringify(bookings));
+    DB.updateBookings(bookings);
     showToast('Reserva cancelada!', 'success');
     renderAdminDashboard();
   }
@@ -1404,14 +1512,13 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
       return;
     }
 
-    let blocked = JSON.parse(localStorage.getItem('barber_blocked_dates')) || [];
+    let blocked = DB.getBlockedDates();
     if (blocked.includes(dateVal)) {
       showToast('Esta data já está bloqueada.', 'warning');
       return;
     }
 
-    blocked.push(dateVal);
-    localStorage.setItem('barber_blocked_dates', JSON.stringify(blocked));
+    DB.saveBlockedDate(dateVal);
     showToast('Data bloqueada com sucesso!', 'success');
     blockDateInput.value = '';
 
@@ -1420,7 +1527,7 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
 
   // Sincronizar inputs administrativos com o localStorage
   function renderStudioStatusConfig() {
-    const config = JSON.parse(localStorage.getItem('jota_studio_config')) || { status: 'auto', rating: 5.0 };
+    const config = DB.getStudioConfig();
     const statusSelect = document.getElementById('admin-status-select');
     const ratingInput = document.getElementById('admin-rating-input');
     
@@ -1454,7 +1561,7 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
         rating: ratingVal
       };
       
-      localStorage.setItem('jota_studio_config', JSON.stringify(config));
+      DB.saveStudioConfig(config);
       showToast('Ajustes do estúdio salvos com sucesso!', 'success');
       
       // Atualizar a Home instantaneamente
@@ -1464,7 +1571,7 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
 
   function renderBlockedDates() {
     adminBlockedDatesList.innerHTML = '';
-    const blocked = JSON.parse(localStorage.getItem('barber_blocked_dates')) || [];
+    const blocked = DB.getBlockedDates();
 
     if (blocked.length === 0) {
       adminBlockedDatesList.innerHTML = '<p class="text-center text-xs text-zinc-500 py-3 font-light">Nenhuma data bloqueada.</p>';
@@ -1495,11 +1602,53 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
   }
 
   function removeBlockDate(dateStr) {
-    let blocked = JSON.parse(localStorage.getItem('barber_blocked_dates')) || [];
-    blocked = blocked.filter(d => d !== dateStr);
-    localStorage.setItem('barber_blocked_dates', JSON.stringify(blocked));
+    DB.removeBlockedDate(dateStr);
     showToast('Data desbloqueada com sucesso!', 'success');
     renderBlockedDates();
+  }
+
+  // --- UPLOAD E PERSISTÊNCIA DE AVATAR DO CLIENTE ---
+  const btnUploadAvatar = document.getElementById('btn-upload-avatar');
+  const profileAvatarInput = document.getElementById('profile-avatar-input');
+  
+  if (btnUploadAvatar && profileAvatarInput) {
+    btnUploadAvatar.addEventListener('click', () => {
+      profileAvatarInput.click();
+    });
+    
+    profileAvatarInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+          showToast('Escolha uma imagem de até 2MB.', 'error');
+          return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const dataUrl = evt.target.result;
+          const client = getLoggedClient();
+          if (client) {
+            client.avatar = dataUrl;
+            
+            const clients = DB.getClients();
+            const updatedClients = clients.map(c => {
+              if (c.email === client.email) {
+                return { ...c, avatar: dataUrl };
+              }
+              return c;
+            });
+            localStorage.setItem('jota_clients', JSON.stringify(updatedClients));
+            
+            setLoggedClient(client);
+            renderClientProfile();
+            updateNavProfileBar();
+            showToast('Foto de perfil atualizada com sucesso!', 'success');
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    });
   }
 
   // Inicializa o roteamento SPA para a home screen

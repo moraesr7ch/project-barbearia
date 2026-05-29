@@ -401,13 +401,7 @@
         <h2 class="section-title reveal-item-tw font-display text-3xl font-black tracking-wider uppercase text-center" id="login-screen-title">ACESSE SUA <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Conta</span></h2>
         
         <div class="auth-card bg-studio-card/60 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-luxury-diffuse relative overflow-hidden reveal-item-tw delay-1" id="auth-card-box">
-          <!-- Toggle Cliente / Admin -->
-          <div class="auth-toggle-container flex bg-black/45 border border-white/5 p-1 rounded-lg mb-6" id="auth-toggle">
-            <button class="auth-toggle-btn active flex-1 py-2 text-sm text-zinc-400 font-barlow tracking-wider uppercase rounded font-bold transition-all active:scale-95" data-mode="client" id="toggle-btn-client">CLIENTE</button>
-            <button class="auth-toggle-btn flex-1 py-2 text-sm text-zinc-400 font-barlow tracking-wider uppercase rounded font-bold transition-all active:scale-95" data-mode="admin" id="toggle-btn-admin">ADMIN</button>
-          </div>
-
-          <!-- Formulário: LOGIN DO CLIENTE -->
+          <!-- Formulário Único de Login (Clientes e Barbeiro) -->
           <form id="form-client-login" class="auth-form space-y-4" onsubmit="return false;">
             <div class="booking-form-group flex flex-col gap-1.5">
               <label for="client-login-email" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">E-mail</label>
@@ -421,8 +415,8 @@
             <p class="auth-subtitle text-center text-xs text-zinc-400 mt-4">Ainda não tem conta? <span class="auth-link text-gold-accent cursor-pointer underline font-bold" id="link-to-register">Cadastre-se</span></p>
           </form>
 
-          <!-- Formulário: CADASTRO DO CLIENTE (Somente Clientes/Usuários podem criar conta) -->
-          <form id="form-client-register" class="auth-form d-none space-y-4" onsubmit="return false;">
+          <!-- Formulário de Cadastro de Clientes (Oculto por padrão com hidden) -->
+          <form id="form-client-register" class="auth-form hidden space-y-4" onsubmit="return false;">
             <div class="booking-form-group flex flex-col gap-1.5">
               <label for="client-reg-name" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">Nome Completo</label>
               <input type="text" id="client-reg-name" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner" placeholder="Ex: João Silva" required>
@@ -442,15 +436,6 @@
             <button type="submit" class="btn-premium btn-primary mt-2 active:scale-95 shadow-luxury-diffuse" id="btn-execute-client-register">CADASTRAR E ENTRAR</button>
             <p class="auth-subtitle text-center text-xs text-zinc-400 mt-4">Já possui conta? <span class="auth-link text-gold-accent cursor-pointer underline font-bold" id="link-to-login">Voltar ao Login</span></p>
           </form>
-
-          <!-- Formulário: LOGIN DO ADMIN (Apenas login, sem opção de cadastro) -->
-          <form id="form-admin-login" class="auth-form d-none space-y-4" onsubmit="return false;">
-            <div class="booking-form-group flex flex-col gap-1.5">
-              <label for="admin-login-password" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">Senha Administrativa</label>
-              <input type="password" id="admin-login-password" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-barber-blue text-center transition-all shadow-inner" placeholder="••••••••" required>
-            </div>
-            <button type="submit" class="btn-premium mt-2 active:scale-95 bg-gradient-to-r from-barber-blue to-cyan-900 text-white font-barlow tracking-wider font-bold shadow-[0_0_20px_rgba(27,58,140,0.5)] border border-white/10" id="btn-execute-admin-login">ENTRAR NO PAINEL</button>
-          </form>
         </div>
       </section>
 
@@ -462,7 +447,25 @@
         
         <!-- Detalhes do Usuário -->
         <article class="profile-header-card reveal-item-tw delay-1 flex flex-col items-center text-center p-6 border border-white/10 rounded-2xl shadow-luxury-diffuse relative" id="client-profile-header">
-          <div class="profile-avatar-circle w-[70px] h-[70px] rounded-full bg-gradient-to-tr from-zinc-200 via-neutral-400 to-zinc-200 text-black flex justify-center items-center text-2xl font-cinzel font-bold border-2 border-text-warm shadow-md mb-3" id="profile-avatar-initials">JS</div>
+          <!-- Container do avatar com upload de foto interativo -->
+          <div class="relative group cursor-pointer mb-3" id="btn-upload-avatar" role="button" aria-label="Alterar foto de perfil">
+            <!-- Círculo do avatar -->
+            <div class="profile-avatar-circle w-[75px] h-[75px] rounded-full bg-gradient-to-tr from-zinc-200 via-neutral-400 to-zinc-200 text-black flex justify-center items-center text-2xl font-cinzel font-bold border-2 border-text-warm shadow-md overflow-hidden relative" id="profile-avatar-initials">
+              <span id="profile-avatar-text">JS</span>
+              <img id="profile-avatar-img" class="w-full h-full object-cover hidden" alt="Foto de perfil">
+            </div>
+            <!-- Ícone de Câmera Overlay hover (Desktop) -->
+            <div class="absolute inset-0 bg-black/45 rounded-full flex justify-center items-center opacity-0 group-hover:opacity-100 transition-all duration-300 border border-gold-accent">
+              <i class="fa-solid fa-camera text-gold-accent text-sm"></i>
+            </div>
+            <!-- Pequeno selo de câmera permanente (Mobile) -->
+            <div class="absolute bottom-0 right-0 w-6 h-6 bg-gold-accent hover:brightness-110 text-black rounded-full flex justify-center items-center border border-studio-black shadow-md">
+              <i class="fa-solid fa-camera text-[0.62rem]"></i>
+            </div>
+          </div>
+          <!-- Input oculto de arquivo -->
+          <input type="file" id="profile-avatar-input" accept="image/*" class="hidden">
+          
           <h3 class="profile-name font-cinzel text-xl font-medium text-text-warm" id="profile-client-display-name">-</h3>
           <p class="profile-email text-xs text-zinc-400 font-light font-sans mt-0.5" id="profile-client-display-email">-</p>
         </article>

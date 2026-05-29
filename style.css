@@ -603,3 +603,11 @@ body::before {
 .booking-service-card.ring-1::after {
   opacity: 1;
 }
+
+/* Ocultação e exibição de etapas do agendamento (Step Panes) */
+.step-pane {
+  display: none;
+}
+.step-pane.active {
+  display: block;
+}
