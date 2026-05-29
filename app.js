@@ -9,16 +9,16 @@ document.addEventListener('DOMContentLoaded', () => {
      DATABASE / DADOS DA LOJA
      ========================================== */
   const SERVICES = [
-    { id: 'srv1', name: 'BARBA', price: 35.00, duration: '30 min', desc: 'Barba desenhada, alinhamento premium e hidratação dos fios.' },
-    { id: 'srv2', name: 'CORTE', price: 40.00, duration: '40 min', desc: 'Corte moderno ou clássico na tesoura/máquina com lavagem inclusa.' },
-    { id: 'srv3', name: 'CORTE & BARBA', price: 69.99, duration: '60 min', desc: 'O combo assinatura perfeito com toalha quente, massagem facial e corte.' },
-    { id: 'srv4', name: 'DESIGN DE SOBRANCELHAS', price: 12.00, duration: '15 min', desc: 'Limpeza e design simétrico de sobrancelhas com lâmina ou pinça.' },
-    { id: 'srv5', name: 'HIDRATAÇÃO PROFUNDA CAPILAR', price: 35.00, duration: '30 min', desc: 'Tratamento com produtos importados para devolver o brilho e força capilar.' },
-    { id: 'srv6', name: 'NEVOU PLATINADO', price: 179.97, duration: '120 min', desc: 'Descoloração global profissional ultra segura com tom platinado gelo.' },
-    { id: 'srv7', name: 'LIMPEZA DE PELE MASCULINA', price: 35.00, duration: '45 min', desc: 'Remoção de cravos, esfoliação profunda e máscara calmante refrescante.' },
-    { id: 'srv8', name: 'BARBOTERAPIA PREMIUM', price: 45.00, duration: '45 min', desc: 'Experiência relaxante com óleos essenciais, massagem facial e toalhas quentes.' },
-    { id: 'srv9', name: 'LUZES', price: 159.97, duration: '90 min', desc: 'Reflexos ou luzes no chapéu/papel para realçar o estilo.' },
-    { id: 'srv10', name: 'CORTE + PIGMENTAÇÃO', price: 59.99, duration: '50 min', desc: 'Corte premium com acabamento pigmentado para corrigir falhas e realçar contornos.' }
+    { id: 'srv1', name: 'BARBA', price: 35.00, duration: '30 min', desc: 'Barba.' },
+    { id: 'srv2', name: 'CORTE', price: 40.00, duration: '40 min', desc: 'Corte.' },
+    { id: 'srv3', name: 'CORTE & BARBA', price: 69.99, duration: '45 min', desc: 'Corte e barba.' },
+    { id: 'srv4', name: 'DESIGN DE SOBRANCELHAS', price: 12.00, duration: '10 min', desc: 'Design de sobrancelha.' },
+    { id: 'srv5', name: 'HIDRATAÇÃO PROFUNDA CAPILAR', price: 35.00, duration: '20 min', desc: 'Hidratação profunda capilar.' },
+    { id: 'srv6', name: 'NEVOU PLATINADO', price: 179.97, duration: '120 min', desc: 'Nevou platinado.' },
+    { id: 'srv7', name: 'LIMPEZA DE PELE MASCULINA', price: 35.00, duration: '45 min', desc: 'Limpeza de pele masculina.' },
+    { id: 'srv8', name: 'BARBOTERAPIA PREMIUM', price: 45.00, duration: '45 min', desc: 'barboterapia Premium.' },
+    { id: 'srv9', name: 'LUZES', price: 159.97, duration: '90 min', desc: 'Luzes.' },
+    { id: 'srv10', name: 'CORTE + PIGMENTAÇÃO', price: 59.99, duration: '50 min', desc: 'Corte + pigmentação.' }
   ];
 
   const WHATSAPP_NUMBER = '5515996406909';
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clients.push({
           name: 'Jota Administrador',
           email: 'admin@jotagaahbs.com.br',
-          phone: '(15) 99999-9999',
+          phone: '(15) 996406909',
           password: 'jota2024',
           role: 'admin'
         });
@@ -970,7 +970,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (let i = 0; i < firstDayIndex; i++) {
       const emptyCell = document.createElement('div');
-      emptyCell.className = 'calendar-day-cell opacity-0 pointer-events-none';
+      emptyCell.className = 'w-9 h-9 opacity-0 pointer-events-none';
       calendarDaysGrid.appendChild(emptyCell);
     }
 
@@ -985,35 +985,26 @@ document.addEventListener('DOMContentLoaded', () => {
       const isPast = new Date(year, month, day, 23, 59, 59) < new Date();
       const isClosed = cellDayOfWeek === 0 || cellDayOfWeek === 1;
       const isBlocked = blockedDates.includes(isoDateStr);
+      const isSelected = appState.booking.selectedDate && appState.booking.selectedDate.toDateString() === cellDateStr;
 
-      let classes = "calendar-day-cell aspect-square flex justify-center items-center text-xs rounded-lg transition-all duration-200 font-sans font-medium ";
+      let classes = "w-9 h-9 rounded-full flex justify-center items-center text-xs transition-all duration-300 font-sans font-semibold mx-auto relative ";
 
       if (isPast || isClosed || isBlocked) {
-        classes += "text-white/10 cursor-not-allowed line-through ";
+        classes += "text-zinc-700/40 cursor-not-allowed pointer-events-none ";
       } else {
-        classes += "text-text-warm cursor-pointer hover:bg-white/5 hover:border-white/20 border border-transparent ";
-        
-        if (cellDateStr === todayStr) {
-          classes += "border-gold-accent/60 text-gold-accent font-bold ";
-        }
-        
-        if (appState.booking.selectedDate && appState.booking.selectedDate.toDateString() === cellDateStr) {
-          classes += "bg-barber-red text-white font-extrabold shadow-[0_0_15px_rgba(196,30,58,0.5)] ";
+        if (isSelected) {
+          classes += "bg-barber-red text-white font-extrabold shadow-[0_0_20px_rgba(196,30,58,0.65)] scale-105 cursor-pointer ";
+        } else {
+          classes += "text-zinc-200 cursor-pointer hover:bg-white/10 hover:text-white active:scale-90 ";
+          if (cellDateStr === todayStr) {
+            classes += "text-gold-accent font-bold after:content-[''] after:absolute after:bottom-[3px] after:w-1 after:h-1 after:bg-gold-accent after:rounded-full ";
+          }
         }
 
         cell.addEventListener('click', () => {
           appState.booking.selectedDate = cellDate;
           appState.booking.selectedTime = null;
-          
-          document.querySelectorAll('.calendar-day-cell').forEach(c => {
-            c.className = c.className.replace('bg-barber-red text-white font-extrabold shadow-[0_0_15px_rgba(196,30,58,0.5)]', '');
-          });
-          cell.className += 'bg-barber-red text-white font-extrabold shadow-[0_0_15px_rgba(196,30,58,0.5)]';
-          
-          setTimeout(() => {
-            appState.booking.step = 3;
-            updateBookingFlowUI();
-          }, 300);
+          renderCalendar();
         });
       }
 
@@ -1046,6 +1037,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     renderCalendar();
   });
+
+  const btnCalendarReset = document.getElementById('btn-calendar-reset');
+  const btnCalendarDone = document.getElementById('btn-calendar-done');
+
+  if (btnCalendarReset) {
+    btnCalendarReset.addEventListener('click', () => {
+      appState.booking.selectedDate = null;
+      appState.booking.selectedTime = null;
+      renderCalendar();
+      showToast('Seleção de data limpa.', 'warning');
+    });
+  }
+
+  if (btnCalendarDone) {
+    btnCalendarDone.addEventListener('click', () => {
+      if (!appState.booking.selectedDate) {
+        showToast('Selecione uma data para avançar.', 'error');
+        return;
+      }
+      appState.booking.step = 3;
+      updateBookingFlowUI();
+    });
+  }
 
   // 3. Horários
   function renderTimeSlots() {
@@ -1244,6 +1258,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const b = appState.booking;
     const client = getLoggedClient();
     const dateFormatted = formatDate(b.selectedDate);
+
+    // 1. Double-Check de Segurança: Validar se a data foi bloqueada pelo Administrador
+    const blockedDates = DB.getBlockedDates();
+    const isoDateStr = `${b.selectedDate.getFullYear()}-${String(b.selectedDate.getMonth() + 1).padStart(2, '0')}-${String(b.selectedDate.getDate()).padStart(2, '0')}`;
+    if (blockedDates.includes(isoDateStr)) {
+      showToast('Esta data não está mais disponível. Por favor, selecione outro dia.', 'error');
+      b.step = 2; // Volta para o calendário
+      updateBookingFlowUI();
+      return;
+    }
+
+    // 2. Double-Check de Segurança: Validar se o horário já foi reservado por outro cliente
+    const currentBookings = DB.getBookings();
+    const isAlreadyBooked = currentBookings.some(bk => bk.date === dateFormatted && bk.time === b.selectedTime);
+    if (isAlreadyBooked) {
+      showToast('Este horário já foi reservado. Por favor, escolha outra hora.', 'error');
+      b.step = 3; // Volta para seleção de horários
+      updateBookingFlowUI();
+      return;
+    }
     
     const newBooking = {
       id: 'bk_' + Date.now(),
@@ -1260,18 +1294,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     DB.saveBooking(newBooking);
 
+    // Mensagem ultra simples sem emojis corrompidos
     const whatsappText = encodeURIComponent(
-`💈 *JOTAGAAHBS Barbearia por Assinatura* 💈
-Olá! Acabei de realizar um agendamento premium:
+`olá, acabei de agendar meu horario pelo aplicativo
 
-👤 *Cliente:* ${b.clientName}
-📞 *Contato:* ${b.clientPhone}
-💇‍♂️ *Serviço:* ${b.selectedService.name}
-💰 *Valor:* ${formatPrice(b.selectedService.price)}
-📅 *Data:* ${dateFormatted}
-⏰ *Horário:* ${b.selectedTime} (${b.selectedService.duration})
+cliente = ${b.clientName}
+serviço = ${b.selectedService.name}
+valor = ${formatPrice(b.selectedService.price)}
+horario = ${dateFormatted} às ${b.selectedTime}
 
-_Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
+confirmado pelo aplicativo de luxo, aguardo o atendimento`
     );
 
     const targetUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappText}`;
@@ -1290,6 +1322,11 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
         clientPhone: ''
       };
       
+      // Limpa os inputs da confirmação
+      inputBookingName.value = '';
+      inputBookingPhone.value = '';
+      
+      // Volta para a home
       navigateTo('home-screen');
     }, 1500);
   }
@@ -1437,8 +1474,26 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
     adminBookingsList.innerHTML = '';
     
     const todayFormatted = formatDate(new Date());
-    const todayBookings = bookings.filter(b => b.date === todayFormatted);
-    todayBookingsCount.textContent = todayBookings.length;
+    
+    // 1. Cálculos de Caixa do Dashboard Financeiro Estilo iOS
+    const totalPaid = bookings.filter(b => b.completed).reduce((sum, b) => sum + b.price, 0);
+    const totalPending = bookings.filter(b => !b.completed).reduce((sum, b) => sum + b.price, 0);
+    const totalEstimated = totalPaid + totalPending;
+    const countCompleted = bookings.filter(b => b.completed).length;
+    const todayPaid = bookings.filter(b => b.date === todayFormatted && b.completed).reduce((sum, b) => sum + b.price, 0);
+
+    // 2. Atualizar Elementos do Dashboard Financeiro no HTML (Protegido contra nulos)
+    const elTotalPaid = document.getElementById('finance-total-paid');
+    const elTodayChange = document.getElementById('finance-today-change');
+    const elCountCompleted = document.getElementById('finance-count-completed');
+    const elTotalPending = document.getElementById('finance-total-pending');
+    const elTotalEstimated = document.getElementById('finance-total-estimated');
+
+    if (elTotalPaid) elTotalPaid.textContent = formatPrice(totalPaid);
+    if (elTodayChange) elTodayChange.innerHTML = `<i class="fa-solid fa-arrow-trend-up"></i> +${formatPrice(todayPaid)} hoje`;
+    if (elCountCompleted) elCountCompleted.innerHTML = `<i class="fa-solid fa-scissors text-[0.7rem] text-zinc-500"></i> ${countCompleted}`;
+    if (elTotalPending) elTotalPending.textContent = formatPrice(totalPending);
+    if (elTotalEstimated) elTotalEstimated.textContent = formatPrice(totalEstimated);
 
     const sortedBookings = [...bookings].sort((a, b) => {
       const dateA = a.date.split('/').reverse().join('-');
@@ -1458,6 +1513,7 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
         const styleToday = isToday ? 'border-l-[3px] border-barber-red pl-3' : 'border-l border-white/10';
 
         item.className = `booking-admin-item reveal-item-tw flex justify-between items-center p-4 border border-white/5 rounded-xl bg-zinc-900/60 backdrop-blur-sm ${styleToday} ${delayClass}`;
+        
         item.innerHTML = `
           <div class="booking-admin-info space-y-1">
             <h4 class="font-cinzel text-xs font-semibold text-text-warm tracking-wider uppercase">${bk.clientName} ${isToday ? '<span class="text-barber-red font-barlow text-[0.65rem] font-black tracking-widest">[HOJE]</span>' : ''}</h4>
@@ -1465,7 +1521,19 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
             <p class="text-[0.72rem] text-zinc-400 font-light flex items-center gap-1"><i class="fa-regular fa-calendar"></i> ${bk.date} às ${bk.time} (${bk.duration})</p>
             <p class="text-[0.72rem] text-zinc-500 font-light flex items-center gap-1"><i class="fa-solid fa-phone"></i> ${bk.clientPhone}</p>
           </div>
-          <div class="booking-admin-actions flex gap-2">
+          <div class="booking-admin-actions flex items-center gap-2">
+            ${bk.completed ? `
+              <span class="px-2 py-0.5 rounded-md bg-green-500/10 border border-green-500/30 text-[0.62rem] font-barlow font-bold text-green-400 flex items-center gap-1 uppercase tracking-wider shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+                <i class="fa-solid fa-circle-check text-[0.65rem]"></i> Pago
+              </span>
+              <button class="btn-admin-action undo w-8 h-8 rounded border border-white/10 flex justify-center items-center hover:bg-zinc-800 transition-all text-xs active:scale-90" data-id="${bk.id}" title="Reabrir Agendamento">
+                <i class="fa-solid fa-arrow-rotate-left text-zinc-400"></i>
+              </button>
+            ` : `
+              <button class="btn-admin-action complete w-8 h-8 rounded border border-white/10 flex justify-center items-center hover:bg-green-500 hover:border-green-500 transition-all text-xs active:scale-90" data-id="${bk.id}" title="Concluir Corte & Registrar Pagamento">
+                <i class="fa-solid fa-check text-text-warm"></i>
+              </button>
+            `}
             <a href="https://wa.me/55${bk.clientPhone.replace(/\D/g, '')}?text=${encodeURIComponent('Olá ' + bk.clientName + ', gostaríamos de confirmar seu horário no dia ' + bk.date + ' às ' + bk.time + ' na JOTAGAAHBS Barbearia.')}" target="_blank" class="btn-admin-action whatsapp w-8 h-8 rounded border border-white/10 flex justify-center items-center hover:bg-green-500 hover:border-green-500 transition-all text-sm active:scale-90" title="Contatar Cliente">
               <i class="fa-brands fa-whatsapp text-text-warm"></i>
             </a>
@@ -1474,6 +1542,16 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
             </button>
           </div>
         `;
+
+        if (!bk.completed) {
+          item.querySelector('.btn-admin-action.complete').addEventListener('click', () => {
+            toggleBookingCompletion(bk.id, true);
+          });
+        } else {
+          item.querySelector('.btn-admin-action.undo').addEventListener('click', () => {
+            toggleBookingCompletion(bk.id, false);
+          });
+        }
 
         item.querySelector('.btn-admin-action.delete').addEventListener('click', () => {
           if (confirm(`Deseja realmente cancelar a reserva de ${bk.clientName}?`)) {
@@ -1495,6 +1573,21 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
     DB.updateBookings(bookings);
     showToast('Reserva cancelada!', 'success');
     renderAdminDashboard();
+  }
+
+  function toggleBookingCompletion(id, completed) {
+    let bookings = DB.getBookings();
+    const bkIndex = bookings.findIndex(b => b.id === id);
+    if (bkIndex !== -1) {
+      bookings[bkIndex].completed = completed;
+      DB.updateBookings(bookings);
+      if (completed) {
+        showToast('Corte concluído e pagamento registrado!', 'success');
+      } else {
+        showToast('Agendamento reaberto com sucesso.', 'warning');
+      }
+      renderAdminDashboard();
+    }
   }
 
   btnBlockDate.addEventListener('click', (e) => {
@@ -1529,11 +1622,9 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
   function renderStudioStatusConfig() {
     const config = DB.getStudioConfig();
     const statusSelect = document.getElementById('admin-status-select');
-    const ratingInput = document.getElementById('admin-rating-input');
     
-    if (statusSelect && ratingInput) {
+    if (statusSelect) {
       statusSelect.value = config.status;
-      ratingInput.value = config.rating.toFixed(1);
     }
   }
 
@@ -1543,22 +1634,15 @@ _Confirmado pelo aplicativo de luxo. Aguardo o atendimento!_`
     btnSaveStudioConfig.addEventListener('click', (e) => {
       e.preventDefault();
       const statusSelect = document.getElementById('admin-status-select');
-      const ratingInput = document.getElementById('admin-rating-input');
       
-      if (!statusSelect || !ratingInput) return;
+      if (!statusSelect) return;
       
       const statusVal = statusSelect.value;
-      const ratingVal = parseFloat(ratingInput.value);
-      
-      if (isNaN(ratingVal) || ratingVal < 1.0 || ratingVal > 5.0) {
-        showToast('A nota de avaliação deve ser um número entre 1.0 e 5.0.', 'error');
-        ratingInput.focus();
-        return;
-      }
+      const currentConfig = DB.getStudioConfig();
       
       const config = {
         status: statusVal,
-        rating: ratingVal
+        rating: currentConfig.rating || 5.0
       };
       
       DB.saveStudioConfig(config);
