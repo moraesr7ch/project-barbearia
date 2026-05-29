@@ -11,130 +11,203 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Estilo Principal -->
+  <!-- TailwindCSS v3 CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'barber-red': '#C41E3A',
+            'barber-blue': '#1B3A8C',
+            'gold-accent': '#C9973A',
+            'studio-black': '#070707',
+            'studio-card': '#141414',
+            'studio-input': '#1C1C1C',
+            'text-warm': '#F0EDE8',
+          },
+          fontFamily: {
+            display: ['Big Shoulders Display', 'sans-serif'],
+            cinzel: ['Big Shoulders Display', 'sans-serif'],
+            cormorant: ['Cormorant Garamond', 'serif'],
+            barlow: ['Barlow Condensed', 'sans-serif'],
+            sans: ['DM Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Estilo Principal Suporte (Fontes, Animações, Neons e 3D Isometria) -->
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="bg-black text-text-warm font-sans antialiased min-h-screen flex justify-center items-start">
 
-  <!-- Container Mobile-First -->
-  <div class="app-container" id="app-root">
+  <!-- Container Mobile-First com Perspectiva 3D -->
+  <div class="app-container-root relative flex flex-col min-h-screen w-full max-w-[480px] bg-studio-black shadow-[0_0_120px_rgba(0,0,0,0.98)] border-x border-white/5 overflow-hidden" id="app-root">
+    
+    <!-- Elementos de Iluminação Indireta Neon Estúdio -->
+    <div class="neon-glow-red top-[-100px] left-[-100px]"></div>
+    <div class="neon-glow-blue bottom-[100px] right-[-100px]"></div>
     
     <!-- Linha Decorativa Barber Pole -->
-    <div class="barber-pole-line" id="barber-pole-top"></div>
+    <div class="barber-pole-line-dynamic" id="barber-pole-top"></div>
     
     <!-- Cabeçalho Principal -->
-    <header id="main-header">
-      <div class="header-top">
-        <!-- Logo Secreto (Trigger para Admin com 5 cliques) -->
-        <div class="logo-wrapper" id="secret-admin-trigger" role="button" aria-label="Área administrativa">
-          <span class="logo-text">JOTAGAAHBS</span>
-          <span class="logo-subtext">Barbearia por Assinatura</span>
-        </div>
+    <header class="relative z-10 w-full px-6 py-3 flex items-center justify-between border-b border-white/5 bg-studio-black/80 backdrop-blur-md sticky top-0" id="main-header">
+      <!-- Espaçador lateral para equilibrar o menu hambúrguer -->
+      <div class="w-10 h-10"></div>
+
+      <!-- Logotipo Oficial (Trigger para Admin com 5 cliques) -->
+      <div class="logo-wrapper cursor-pointer select-none transition-all duration-300 flex flex-col items-center justify-center active:scale-95" id="secret-admin-trigger" role="button" aria-label="Área administrativa">
+        <img src="assets/images/logo.png" alt="JOTAGAAHBS Barbearia" class="w-48 h-auto object-contain logo-sharp drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
       </div>
+
+      <!-- Botão Menu Hambúrguer (3 riscos de luxo vítreo) -->
+      <button id="btn-hamburger-menu" class="w-10 h-10 border border-white/10 rounded-lg flex justify-center items-center text-text-warm bg-zinc-950/40 backdrop-blur-md transition-all active:scale-90" aria-label="Abrir menu lateral">
+        <i class="fa-solid fa-bars text-lg"></i>
+      </button>
     </header>
 
-    <!-- Conteúdo Principal Dinâmico SPA -->
-    <main id="app-main-content">
+    <!-- Gaveta de Menu Hambúrguer (Side Drawer Lateral) -->
+    <div class="drawer-overlay" id="menu-drawer-overlay"></div>
+    <div class="drawer-menu flex flex-col p-6 space-y-6" id="menu-drawer">
+      <div class="flex justify-between items-center border-b border-white/10 pb-4">
+        <span class="font-cinzel tracking-[2px] text-xs font-semibold text-text-warm">MENU JOTAGAAHBS</span>
+        <button id="btn-close-drawer" class="w-8 h-8 border border-white/10 rounded-full flex justify-center items-center text-text-warm bg-white/5 hover:bg-white/10 transition-all active:scale-90" aria-label="Fechar menu">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+      
+      <!-- Opções de Menu Dinâmico via JS -->
+      <div id="drawer-menu-options" class="flex flex-col gap-4 flex-1">
+        <!-- Injetado dinamicamente no app.js com estilos luxuosos -->
+      </div>
+      
+      <!-- Informações Rodapé Drawer -->
+      <div class="border-t border-white/10 pt-4 flex flex-col gap-1.5 text-center">
+        <p class="text-[0.7rem] text-zinc-500 font-light">JOTAGAAHBS © 2026</p>
+        <p class="text-[0.62rem] text-zinc-600 font-light leading-snug">Rua Enok Barreira de Macedo, 444<br>Tietê, SP</p>
+      </div>
+    </div>
+
+    <!-- Conteúdo Principal SPA -->
+    <main class="relative z-10 flex-1 px-5 pt-6 pb-24 overflow-y-auto custom-scrollbar" id="app-main-content">
       
       <!-- ==========================================
            1. HOME SCREEN
            ========================================== -->
-      <section id="home-screen" class="app-screen active">
+      <section id="home-screen" class="app-screen active space-y-8">
         <!-- Hero Banner -->
-        <article class="hero-section" id="hero-banner">
-          <div class="hero-badge" id="hero-badge-tag">Membro Premium</div>
-          <h1 class="hero-title" id="hero-headline">ESTILO COM <br><span style="color: var(--accent-red);">PERSONALIDADE</span></h1>
-          <p class="hero-description" id="hero-subtext">Viva a experiência do vintage clássico americano aliado ao luxo moderno. Cabelo, barba e bem-estar em um estúdio exclusivo.</p>
-          <button class="btn-premium btn-primary" id="home-booking-cta" aria-label="Agendar um horário agora">
-            <i class="fa-solid fa-calendar-check"></i> AGENDAR HORÁRIO
+        <article class="hero-section flex flex-col items-center text-center py-6 relative z-10" id="hero-banner">
+          <div class="hero-badge reveal-item-tw font-barlow text-[0.7rem] tracking-[3px] text-gold-accent border border-gold-accent/40 px-3 py-1 rounded-full uppercase bg-gold-accent/5 mb-6" id="hero-badge-tag">barbearia Premium</div>
+          <h1 class="hero-title reveal-item-tw delay-1 font-display font-black text-6xl tracking-[-0.03em] leading-[0.9] uppercase bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent" id="hero-headline">
+            CADA DETALHE<br>
+            <span class="highlight-serif text-barber-red italic font-bold font-cormorant lowercase text-[3.2rem] block mt-2 tracking-normal bg-none bg-clip-border text-barber-red fill-current leading-none">IMPORTA</span>
+          </h1>
+          <p class="hero-description reveal-item-tw delay-2 text-[0.7rem] uppercase tracking-[0.3em] font-light text-zinc-500 mt-5 max-w-[90%] leading-relaxed" id="hero-subtext">
+            agende seu horário agora mesmo
+          </p>
+          <button class="btn-premium btn-primary reveal-item-tw delay-3 mt-8 active:scale-95 animate-bounce-luxury" id="home-booking-cta" aria-label="Agendar um horário agora">
+            <i class="fa-solid fa-calendar-check mr-2"></i> AGENDAR HORÁRIO
           </button>
         </article>
 
-        <!-- Informações Rápidas -->
-        <div class="quick-info-row" id="quick-info-container">
-          <div class="info-card" id="info-rating">
-            <i class="fa-solid fa-star"></i>
-            <h4>Avaliação</h4>
-            <p class="gold-text" style="font-size: 0.95rem; margin-top: 0.2rem;">5.0 / 5.0</p>
+        <!-- Linha de Informações Rápidas Minimalistas (Estilo Apple/AirPods 4) -->
+        <div class="reveal-item-tw delay-4 flex items-center justify-center gap-6 py-2 px-6 bg-zinc-950/30 border border-white/5 rounded-full w-fit mx-auto shadow-inner backdrop-blur-sm" id="minimal-info-bar">
+          <!-- Avaliação -->
+          <div class="flex items-center gap-1.5" id="home-rating-display">
+            <i class="fa-solid fa-star text-gold-accent text-xs"></i>
+            <span class="text-xs font-semibold text-text-warm" id="display-rating-value">5.0</span>
           </div>
-          <div class="info-card" id="info-location">
-            <i class="fa-solid fa-map-location-dot"></i>
-            <h4>Endereço</h4>
-            <p>Tietê, SP</p>
+          
+          <!-- Divisor -->
+          <div class="h-3 w-[1px] bg-white/10"></div>
+          
+          <!-- Status de Funcionamento -->
+          <div class="flex items-center gap-1.5" id="home-status-display">
+            <i class="fa-solid fa-store text-gold-accent text-xs"></i>
+            <span class="text-xs font-semibold text-green-500" id="display-status-value">Aberto Agora</span>
           </div>
-          <div class="info-card" id="info-status">
-            <i class="fa-solid fa-door-open"></i>
-            <h4>Hoje</h4>
-            <p id="today-status-text">Aberto</p>
-          </div>
+          
+          <!-- Divisor -->
+          <div class="h-3 w-[1px] bg-white/10"></div>
+          
+          <!-- Telefone/WhatsApp -->
+          <a href="https://wa.me/5515996406909" target="_blank" class="flex items-center gap-1.5 text-zinc-400 hover:text-text-warm transition-all" id="home-phone-display">
+            <i class="fa-solid fa-phone text-gold-accent text-xs"></i>
+            <span class="text-xs font-medium font-sans">(15) 99640-6909</span>
+          </a>
         </div>
 
-        <!-- Preview de Serviços -->
-        <section class="services-preview-section" id="services-preview">
-          <h2 class="section-title" id="services-title">SERVIÇOS DE ASSINATURA</h2>
-          <div class="service-preview-list" id="services-preview-list">
-            <!-- Os serviços serão populados dinamicamente via JS ou listados para SEO -->
-            <article class="service-item-row">
-              <div class="service-item-info">
-                <h4>CORTE & BARBA</h4>
-                <p>O combo perfeito com toalha quente e acabamento premium.</p>
+        <!-- Preview de Serviços (Ajuste Isométrico 3D) -->
+        <section class="services-preview-section reveal-item-tw delay-5 space-y-5" id="services-preview">
+          <h2 class="section-title font-display text-3xl font-black tracking-wider uppercase text-center" id="services-title">NOSSOS <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Serviços</span></h2>
+          <div class="service-preview-list flex flex-col gap-4" id="services-preview-list">
+            <!-- Cards com efeito isométrico tridimensional flutuante -->
+            <article class="service-item-row isometric-grid-card flex justify-between items-center p-4 bg-zinc-950/60 backdrop-blur-md border border-white/10 rounded-xl">
+              <div class="service-item-info space-y-1 pr-4">
+                <h4 class="font-cinzel text-[0.82rem] font-semibold tracking-wider text-text-warm">CORTE & BARBA</h4>
+                <p class="text-[0.74rem] text-zinc-400 font-light leading-snug">Alinhamento de barba, toalha quente e acabamento.</p>
               </div>
-              <span class="service-item-price">R$ 69,99</span>
+              <span class="service-item-price font-barlow text-lg text-gold-accent font-bold">R$ 69,99</span>
             </article>
-            <article class="service-item-row">
-              <div class="service-item-info">
-                <h4>NEVOU PLATINADO</h4>
-                <p>Descoloração global ultra segura e tom platinado perfeito.</p>
+            <article class="service-item-row isometric-grid-card flex justify-between items-center p-4 bg-zinc-950/60 backdrop-blur-md border border-white/10 rounded-xl">
+              <div class="service-item-info space-y-1 pr-4">
+                <h4 class="font-cinzel text-[0.82rem] font-semibold tracking-wider text-text-warm">NEVOU PLATINADO</h4>
+                <p class="text-[0.74rem] text-zinc-400 font-light leading-snug">Descoloração profissional com tom platinado gelo.</p>
               </div>
-              <span class="service-item-price">R$ 179,97</span>
+              <span class="service-item-price font-barlow text-lg text-gold-accent font-bold">R$ 179,97</span>
             </article>
-            <article class="service-item-row">
-              <div class="service-item-info">
-                <h4>BARBOTERAPIA PREMIUM</h4>
-                <p>Barba desenhada, óleos especiais e relaxamento completo.</p>
+            <article class="service-item-row isometric-grid-card flex justify-between items-center p-4 bg-zinc-950/60 backdrop-blur-md border border-white/10 rounded-xl">
+              <div class="service-item-info space-y-1 pr-4">
+                <h4 class="font-cinzel text-[0.82rem] font-semibold tracking-wider text-text-warm">BARBOTERAPIA PREMIUM</h4>
+                <p class="text-[0.74rem] text-zinc-400 font-light leading-snug">Barba desenhada, óleos essenciais e relaxamento.</p>
               </div>
-              <span class="service-item-price">R$ 45,00</span>
+              <span class="service-item-price font-barlow text-lg text-gold-accent font-bold">R$ 45,00</span>
             </article>
           </div>
-          <button class="btn-premium btn-secondary mt-2" id="home-view-services-btn" aria-label="Ver todos os serviços disponíveis">
+          <button class="btn-premium btn-secondary mt-3 active:scale-95" id="home-view-services-btn" aria-label="Ver todos os serviços disponíveis">
             VER TODOS OS SERVIÇOS (10)
           </button>
         </section>
 
         <!-- Horários de Funcionamento -->
-        <section class="hours-section" id="business-hours-info">
-          <h2 class="section-title" id="hours-title">HORÁRIOS</h2>
-          <div class="chrome-card" id="hours-card">
-            <div class="hours-table" id="hours-list">
-              <div class="hours-row">
-                <span class="hours-day">Terça a Sexta</span>
-                <span class="hours-time">08:00 às 20:00</span>
+        <section class="hours-section reveal-item-tw delay-5 space-y-5" id="business-hours-info">
+          <h2 class="section-title font-display text-3xl font-black tracking-wider uppercase text-center" id="hours-title">GRADE DE <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Horários</span></h2>
+          <div class="chrome-card chrome-border-premium rounded-2xl p-5 shadow-luxury-diffuse" id="hours-card">
+            <div class="hours-table w-full flex flex-col divide-y divide-white/5" id="hours-list">
+              <div class="hours-row flex justify-between py-3 text-sm">
+                <span class="hours-day font-semibold text-text-warm">Terça a Sexta</span>
+                <span class="hours-time text-zinc-400">08:00 às 20:00</span>
               </div>
-              <div class="hours-row">
-                <span class="hours-day">Sábado</span>
-                <span class="hours-time">08:00 às 19:00</span>
+              <div class="hours-row flex justify-between py-3 text-sm">
+                <span class="hours-day font-semibold text-text-warm">Sábado</span>
+                <span class="hours-time text-zinc-400">08:00 às 19:00</span>
               </div>
-              <div class="hours-row closed">
-                <span class="hours-day">Segunda e Domingo</span>
-                <span class="hours-time">FECHADO</span>
+              <div class="hours-row closed flex justify-between py-3 text-sm text-barber-red">
+                <span class="hours-day font-bold">Segunda e Domingo</span>
+                <span class="hours-time font-bold uppercase">FECHADO</span>
               </div>
             </div>
           </div>
         </section>
 
         <!-- Endereço e Localização -->
-        <section class="address-section" id="store-address-info">
-          <h2 class="section-title" id="address-title">LOCALIZAÇÃO</h2>
-          <div class="chrome-card address-card" id="address-details-card">
-            <div class="map-placeholder" id="virtual-map">
-              <i class="fa-solid fa-location-dot map-pin"></i>
-              <div class="map-location-tag">Tietê, SP</div>
-            </div>
+        <section class="address-section reveal-item-tw delay-5 space-y-5" id="store-address-info">
+          <h2 class="section-title font-display text-3xl font-black tracking-wider uppercase text-center" id="address-title">COMO <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Chegar</span></h2>
+          <div class="chrome-card chrome-border-premium rounded-2xl p-5 shadow-luxury-diffuse flex flex-col gap-4" id="address-details-card">
+            <a href="https://www.google.com/maps/search/?api=1&query=Rua+Enok+Barreira+de+Macedo+444+Tiet%C3%AA+SP" target="_blank" class="map-placeholder w-full h-[160px] rounded-xl border border-white/10 relative overflow-hidden flex justify-content-center items-center hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer block" id="virtual-map" aria-label="Abrir localização no Google Maps">
+              <img src="assets/images/map.png" alt="Localização JOTAGAAHBS Barbearia" class="w-full h-full object-cover logo-sharp">
+              <div class="map-location-tag absolute bottom-3 left-3 px-3 py-1 bg-black/90 border border-white/10 rounded text-[0.7rem] text-text-warm font-light flex items-center gap-1.5 shadow-lg">
+                <i class="fa-solid fa-location-dot text-gold-accent"></i> Tietê, SP
+              </div>
+            </a>
             <div class="text-center" id="address-text-container">
-              <p style="color: var(--text-light); font-weight: 500; font-size: 0.95rem;">Rua Enok Barreira de Macedo, 444</p>
-              <p style="font-size: 0.85rem;" class="mt-1">Tietê - SP | CEP 18200-000</p>
+              <p class="text-text-warm font-medium text-sm">Rua Enok Barreira de Macedo, 444</p>
+              <p class="text-[0.8rem] text-zinc-400 mt-1 font-light">Tietê - SP | CEP 18200-000</p>
             </div>
-            <a href="https://maps.google.com/?q=Rua+Enok+Barreira+de+Macedo+444+Tiete+SP" target="_blank" class="btn-premium btn-secondary" id="address-gps-button" aria-label="Abrir no GPS Google Maps">
+            <a href="https://www.google.com/maps/search/?api=1&query=Rua+Enok+Barreira+de+Macedo+444+Tiet%C3%AA+SP" target="_blank" class="btn-premium btn-secondary active:scale-95" id="address-gps-button" aria-label="Abrir no GPS Google Maps">
               <i class="fa-solid fa-compass"></i> ABRIR NO GPS
             </a>
           </div>
@@ -142,111 +215,122 @@
       </section>
 
       <!-- ==========================================
-           2. BOOKING SCREEN
+           2. BOOKING SCREEN (PROTECTED ROUTE)
            ========================================== -->
-      <section id="booking-screen" class="app-screen">
-        <h2 class="section-title" id="booking-screen-title">RESERVAR HORÁRIO</h2>
+      <section id="booking-screen" class="app-screen space-y-6">
+        <h2 class="section-title reveal-item-tw font-display text-3xl font-black tracking-wider uppercase text-center" id="booking-screen-title">AGENDE SEU <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Horário</span></h2>
         
-        <div class="booking-flow-container" id="booking-flow">
+        <div class="booking-flow-container flex flex-col gap-6" id="booking-flow">
           
           <!-- Barra de Progresso do Fluxo de Agendamento -->
-          <div class="progress-bar-container" id="booking-progress-header">
-            <div class="progress-bar-line"></div>
-            <div class="progress-bar-fill" id="booking-progress-fill"></div>
-            <div class="progress-step-dot active" data-step="1" id="dot-step-1">1</div>
-            <div class="progress-step-dot" data-step="2" id="dot-step-2">2</div>
-            <div class="progress-step-dot" data-step="3" id="dot-step-3">3</div>
-            <div class="progress-step-dot" data-step="4" id="dot-step-4">4</div>
-            <div class="progress-step-dot" data-step="5" id="dot-step-5">5</div>
+          <div class="progress-bar-container reveal-item-tw delay-1 flex justify-between relative py-2 px-1" id="booking-progress-header">
+            <div class="progress-bar-line absolute top-1/2 left-0 h-[2px] bg-white/5 w-full -translate-y-1/2 z-1"></div>
+            <div class="progress-bar-fill absolute top-1/2 left-0 h-[2px] bg-gradient-to-r from-bar-red via-gold-accent to-bar-blue w-[0%] -translate-y-1/2 z-1 transition-all duration-500" id="booking-progress-fill"></div>
+            <div class="progress-step-dot active z-10 w-7 h-7 rounded-full bg-studio-card border-2 border-white/20 flex justify-center items-center font-barlow text-[0.8rem] text-zinc-400 transition-all duration-300" data-step="1" id="dot-step-1">1</div>
+            <div class="progress-step-dot z-10 w-7 h-7 rounded-full bg-studio-card border-2 border-white/20 flex justify-center items-center font-barlow text-[0.8rem] text-zinc-400 transition-all duration-300" data-step="2" id="dot-step-2">2</div>
+            <div class="progress-step-dot z-10 w-7 h-7 rounded-full bg-studio-card border-2 border-white/20 flex justify-center items-center font-barlow text-[0.8rem] text-zinc-400 transition-all duration-300" data-step="3" id="dot-step-3">3</div>
+            <div class="progress-step-dot z-10 w-7 h-7 rounded-full bg-studio-card border-2 border-white/20 flex justify-center items-center font-barlow text-[0.8rem] text-zinc-400 transition-all duration-300" data-step="4" id="dot-step-4">4</div>
+            <div class="progress-step-dot z-10 w-7 h-7 rounded-full bg-studio-card border-2 border-white/20 flex justify-center items-center font-barlow text-[0.8rem] text-zinc-400 transition-all duration-300" data-step="5" id="dot-step-5">5</div>
           </div>
 
           <!-- Passo 1: Seleção de Serviço -->
-          <div class="step-pane active" id="step-pane-1">
-            <h3 class="step-title" id="step-title-1">1. Escolha o Serviço</h3>
-            <p class="step-description">Selecione o procedimento que deseja realizar com nossos especialistas.</p>
-            <div class="booking-services-grid" id="booking-services-list">
-              <!-- Populados via JS dinamicamente com todos os 10 serviços -->
+          <div class="step-pane active space-y-4" id="step-pane-1">
+            <div class="reveal-item-tw delay-2">
+              <h3 class="step-title font-cinzel text-base tracking-wider text-text-warm font-semibold" id="step-title-1">1. Escolha o Serviço</h3>
+              <p class="step-description text-xs text-zinc-400 font-light mt-0.5">Selecione o procedimento que deseja realizar.</p>
+            </div>
+            <div class="booking-services-grid reveal-item-tw delay-3 flex flex-col gap-4 max-h-[400px] overflow-y-auto pr-1" id="booking-services-list">
+              <!-- Populados via JS dinamicamente com os 10 serviços cromados glass -->
             </div>
           </div>
 
           <!-- Passo 2: Seleção de Data -->
-          <div class="step-pane" id="step-pane-2">
-            <h3 class="step-title" id="step-title-2">2. Escolha a Data</h3>
-            <p class="step-description">Selecione o dia disponível. Atenção: fechados às segundas e domingos.</p>
-            <div class="calendar-widget" id="booking-calendar-widget">
-              <div class="calendar-header">
-                <button class="calendar-nav-btn" id="prev-month-btn" aria-label="Mês anterior"><i class="fa-solid fa-chevron-left"></i></button>
-                <h3 id="calendar-current-month">Maio 2026</h3>
-                <button class="calendar-nav-btn" id="next-month-btn" aria-label="Próximo mês"><i class="fa-solid fa-chevron-right"></i></button>
+          <div class="step-pane space-y-4" id="step-pane-2">
+            <div>
+              <h3 class="step-title font-cinzel text-base tracking-wider text-text-warm font-semibold" id="step-title-2">2. Escolha a Data</h3>
+              <p class="step-description text-xs text-zinc-400 font-light mt-0.5">Fechados aos domingos e segundas.</p>
+            </div>
+            <div class="calendar-widget bg-studio-card/60 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-luxury-diffuse" id="booking-calendar-widget">
+              <div class="calendar-header flex justify-between items-center mb-4">
+                <button class="calendar-nav-btn w-8 h-8 rounded-full border border-white/10 text-text-warm flex justify-center items-center transition-all hover:bg-white/5 active:scale-90" id="prev-month-btn" aria-label="Mês anterior"><i class="fa-solid fa-chevron-left"></i></button>
+                <h3 id="calendar-current-month" class="font-barlow text-sm tracking-wider uppercase text-text-warm font-bold">Maio 2026</h3>
+                <button class="calendar-nav-btn w-8 h-8 rounded-full border border-white/10 text-text-warm flex justify-center items-center transition-all hover:bg-white/5 active:scale-90" id="next-month-btn" aria-label="Próximo mês"><i class="fa-solid fa-chevron-right"></i></button>
               </div>
-              <div class="calendar-weekdays">
+              <div class="calendar-weekdays grid grid-cols-7 text-center font-barlow text-[0.7rem] tracking-wider text-zinc-400 font-extrabold mb-2">
                 <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
               </div>
-              <div class="calendar-days" id="calendar-days-grid">
+              <div class="calendar-days grid grid-cols-7 gap-1.5 text-center" id="calendar-days-grid">
                 <!-- Populado via JS -->
               </div>
             </div>
           </div>
 
           <!-- Passo 3: Seleção de Horário -->
-          <div class="step-pane" id="step-pane-3">
-            <h3 class="step-title" id="step-title-3">3. Escolha o Horário</h3>
-            <p class="step-description">Escolha um horário livre para o dia selecionado.</p>
-            <div class="time-slots-grid" id="booking-time-slots">
-              <!-- Populados dinamicamente via JS baseados no dia da semana -->
+          <div class="step-pane space-y-4" id="step-pane-3">
+            <div>
+              <h3 class="step-title font-cinzel text-base tracking-wider text-text-warm font-semibold" id="step-title-3">3. Escolha o Horário</h3>
+              <p class="step-description text-xs text-zinc-400 font-light mt-0.5">Selecione uma hora operacional livre.</p>
+            </div>
+            <div class="time-slots-grid grid grid-cols-3 gap-3 max-h-[300px] overflow-y-auto pr-1" id="booking-time-slots">
+              <!-- Populados via JS -->
             </div>
           </div>
 
-          <!-- Passo 4: Dados do Cliente -->
-          <div class="step-pane" id="step-pane-4">
-            <h3 class="step-title" id="step-title-4">4. Seus Dados</h3>
-            <p class="step-description">Preencha seus dados para receber o lembrete de agendamento.</p>
-            <div class="booking-form" id="booking-user-form">
-              <div class="booking-form-group">
-                <label for="booking-name">Nome Completo</label>
-                <input type="text" id="booking-name" class="input-premium" placeholder="Ex: João Silva" required>
+          <!-- Passo 4: Confirmação de Telefone -->
+          <div class="step-pane space-y-4" id="step-pane-4">
+            <div>
+              <h3 class="step-title font-cinzel text-base tracking-wider text-text-warm font-semibold" id="step-title-4">4. Confirmação do Telefone</h3>
+              <p class="step-description text-xs text-zinc-400 font-light mt-0.5">Utilizado para confirmações oficiais pelo WhatsApp.</p>
+            </div>
+            <div class="booking-form space-y-4" id="booking-user-form">
+              <div class="booking-form-group flex flex-col gap-1.5">
+                <label for="booking-name" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">Nome Completo</label>
+                <input type="text" id="booking-name" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner" placeholder="Ex: João Silva" required>
               </div>
-              <div class="booking-form-group">
-                <label for="booking-phone">WhatsApp / Telefone</label>
-                <input type="tel" id="booking-phone" class="input-premium" placeholder="Ex: (15) 99999-9999" required>
+              <div class="booking-form-group flex flex-col gap-1.5">
+                <label for="booking-phone" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">WhatsApp / Telefone</label>
+                <input type="tel" id="booking-phone" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner" placeholder="Ex: (15) 99999-9999" required>
               </div>
             </div>
           </div>
 
-          <!-- Passo 5: Confirmação e Redirecionamento -->
-          <div class="step-pane" id="step-pane-5">
-            <h3 class="step-title" id="step-title-5">5. Confirmar Reserva</h3>
-            <p class="step-description">Confirme todos os detalhes abaixo. Para finalizar, clique no botão e envie a mensagem no WhatsApp.</p>
+          <!-- Passo 5: Recibo final -->
+          <div class="step-pane space-y-4" id="step-pane-5">
+            <div>
+              <h3 class="step-title font-cinzel text-base tracking-wider text-text-warm font-semibold" id="step-title-5">5. Confirmar Reserva</h3>
+              <p class="step-description text-xs text-zinc-400 font-light mt-0.5">Envie a mensagem gerada para nosso WhatsApp de atendimento.</p>
+            </div>
             
-            <div class="receipt-card" id="booking-receipt-details">
-              <h4 class="receipt-title">RECIBO DE RESERVA</h4>
-              <div class="receipt-row">
-                <span class="receipt-label">Serviço:</span>
-                <span class="receipt-value" id="receipt-service-name">-</span>
+            <div class="receipt-card border border-dashed border-white/20 bg-studio-card/60 backdrop-blur-md p-5 rounded-2xl space-y-3 relative overflow-hidden shadow-luxury-diffuse" id="booking-receipt-details">
+              <div class="absolute -top-10 -right-10 w-24 h-24 rounded-full bg-gold-accent/5 pointer-events-none"></div>
+              <h4 class="receipt-title text-center font-barlow tracking-[2px] uppercase text-gold-accent font-bold border-b border-white/5 pb-2 text-sm">RECIBO DE RESERVA</h4>
+              <div class="receipt-row flex justify-between text-xs py-1">
+                <span class="receipt-label text-zinc-400">Serviço:</span>
+                <span class="receipt-value text-text-warm font-semibold" id="receipt-service-name">-</span>
               </div>
-              <div class="receipt-row">
-                <span class="receipt-label">Data:</span>
-                <span class="receipt-value" id="receipt-date">-</span>
+              <div class="receipt-row flex justify-between text-xs py-1">
+                <span class="receipt-label text-zinc-400">Data:</span>
+                <span class="receipt-value text-text-warm font-semibold" id="receipt-date">-</span>
               </div>
-              <div class="receipt-row">
-                <span class="receipt-label">Horário:</span>
-                <span class="receipt-value" id="receipt-time">-</span>
+              <div class="receipt-row flex justify-between text-xs py-1">
+                <span class="receipt-label text-zinc-400">Horário:</span>
+                <span class="receipt-value text-text-warm font-semibold" id="receipt-time">-</span>
               </div>
-              <div class="receipt-row">
-                <span class="receipt-label">Cliente:</span>
-                <span class="receipt-value" id="receipt-client-name">-</span>
+              <div class="receipt-row flex justify-between text-xs py-1">
+                <span class="receipt-label text-zinc-400">Cliente:</span>
+                <span class="receipt-value text-text-warm font-semibold" id="receipt-client-name">-</span>
               </div>
-              <div class="receipt-row total">
-                <span class="receipt-label">Valor do Serviço:</span>
-                <span class="receipt-value" id="receipt-price">-</span>
+              <div class="receipt-row total flex justify-between text-sm py-2 border-t border-white/5 mt-2 font-bold">
+                <span class="receipt-label text-gold-accent">Valor do Serviço:</span>
+                <span class="receipt-value text-gold-accent text-base" id="receipt-price">-</span>
               </div>
             </div>
           </div>
 
-          <!-- Botões de Navegação do Fluxo -->
-          <div class="flow-actions-row" id="booking-actions-row">
-            <button class="btn-premium btn-secondary d-none" id="btn-booking-back" aria-label="Voltar etapa">VOLTAR</button>
-            <button class="btn-premium btn-primary" id="btn-booking-next" aria-label="Avançar etapa">AVANÇAR</button>
+          <!-- Botões de Ação do Fluxo -->
+          <div class="flow-actions-row reveal-item-tw delay-4 flex gap-4 mt-2" id="booking-actions-row">
+            <button class="btn-premium btn-secondary d-none active:scale-95 shadow-luxury-diffuse" id="btn-booking-back" aria-label="Voltar etapa">VOLTAR</button>
+            <button class="btn-premium btn-primary active:scale-95 shadow-luxury-diffuse" id="btn-booking-next" aria-label="Avançar etapa">AVANÇAR</button>
           </div>
 
         </div>
@@ -255,53 +339,55 @@
       <!-- ==========================================
            3. REVIEWS SCREEN
            ========================================== -->
-      <section id="reviews-screen" class="app-screen">
-        <h2 class="section-title" id="reviews-screen-title">AVALIAÇÕES</h2>
+      <section id="reviews-screen" class="app-screen space-y-8">
+        <h2 class="section-title reveal-item-tw font-display text-3xl font-black tracking-wider uppercase text-center" id="reviews-screen-title">OPINIÃO DOS <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Clientes</span></h2>
         
-        <div class="reviews-summary" id="reviews-general-summary">
-          <div class="reviews-score-big" id="avg-rating-value">5.0</div>
-          <div class="reviews-stars-column">
-            <div class="stars-rating" id="avg-stars-row">
+        <div class="reviews-summary reveal-item-tw delay-1 flex items-center gap-5 bg-studio-card/40 border border-white/5 rounded-2xl p-5 shadow-luxury-diffuse" id="reviews-general-summary">
+          <div class="reviews-score-big text-[3rem] font-barlow text-gold-accent font-extrabold leading-none" id="avg-rating-value">5.0</div>
+          <div class="reviews-stars-column flex-1 space-y-1">
+            <div class="stars-rating text-gold-accent flex gap-1" id="avg-stars-row">
               <i class="fa-solid fa-star"></i>
               <i class="fa-solid fa-star"></i>
               <i class="fa-solid fa-star"></i>
               <i class="fa-solid fa-star"></i>
               <i class="fa-solid fa-star"></i>
             </div>
-            <h4 class="mt-1" id="reviews-count-label">Baseado em 5 avaliações</h4>
+            <h4 class="text-xs text-zinc-400 font-light" id="reviews-count-label">Baseado em 5 avaliações</h4>
           </div>
         </div>
 
         <!-- Lista de Reviews -->
-        <div class="reviews-list" id="reviews-list-container">
-          <!-- Populados dinamicamente via JS -->
+        <div class="reviews-list reveal-item-tw delay-2 flex flex-col gap-4" id="reviews-list-container">
+          <!-- Populados via JS -->
         </div>
 
         <!-- Formulário para Submeter Nova Avaliação -->
-        <section class="add-review-section" id="add-new-review-form">
-          <h3 class="step-title" style="font-size: 1.3rem;">Deixe sua Avaliação</h3>
-          <p class="step-description">Sua opinião é fundamental para mantermos o nosso padrão de luxo por assinatura.</p>
+        <section class="add-review-section reveal-item-tw delay-3 border-t border-white/5 pt-6 space-y-4" id="add-new-review-form">
+          <div>
+            <h3 class="step-title font-cinzel text-base tracking-wider text-text-warm font-semibold">DEIXE SUA <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Avaliação</span></h3>
+            <p class="step-description text-xs text-zinc-400 font-light mt-0.5">Sua opinião é fundamental para mantermos o nosso padrão.</p>
+          </div>
           
-          <form id="review-submit-form" onsubmit="return false;">
-            <div class="booking-form-group">
-              <label>Sua Nota</label>
-              <div class="stars-selector-row" id="stars-selector" role="radiogroup" aria-label="Nota de 1 a 5 estrelas">
-                <i class="fa-solid fa-star selected" data-value="1" role="radio" aria-checked="false" tabindex="0"></i>
-                <i class="fa-solid fa-star selected" data-value="2" role="radio" aria-checked="false" tabindex="-1"></i>
-                <i class="fa-solid fa-star selected" data-value="3" role="radio" aria-checked="false" tabindex="-1"></i>
-                <i class="fa-solid fa-star selected" data-value="4" role="radio" aria-checked="false" tabindex="-1"></i>
-                <i class="fa-solid fa-star selected" data-value="5" role="radio" aria-checked="true" tabindex="-1"></i>
+          <form id="review-submit-form" onsubmit="return false;" class="space-y-4">
+            <div class="booking-form-group flex flex-col gap-1.5">
+              <label class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">Sua Nota</label>
+              <div class="stars-selector-row flex gap-2 text-2xl text-white/10" id="stars-selector" role="radiogroup" aria-label="Nota de 1 a 5 estrelas">
+                <i class="fa-solid fa-star selected cursor-pointer transition-all hover:scale-110" data-value="1" role="radio" aria-checked="false" tabindex="0"></i>
+                <i class="fa-solid fa-star selected cursor-pointer transition-all hover:scale-110" data-value="2" role="radio" aria-checked="false" tabindex="-1"></i>
+                <i class="fa-solid fa-star selected cursor-pointer transition-all hover:scale-110" data-value="3" role="radio" aria-checked="false" tabindex="-1"></i>
+                <i class="fa-solid fa-star selected cursor-pointer transition-all hover:scale-110" data-value="4" role="radio" aria-checked="false" tabindex="-1"></i>
+                <i class="fa-solid fa-star selected cursor-pointer transition-all hover:scale-110" data-value="5" role="radio" aria-checked="true" tabindex="-1"></i>
               </div>
             </div>
-            <div class="booking-form-group">
-              <label for="review-author-name">Seu Nome</label>
-              <input type="text" id="review-author-name" class="input-premium" placeholder="Ex: Roberto Carlos" required>
+            <div class="booking-form-group flex flex-col gap-1.5">
+              <label for="review-author-name" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">Seu Nome</label>
+              <input type="text" id="review-author-name" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner" placeholder="Ex: Roberto Carlos" required>
             </div>
-            <div class="booking-form-group">
-              <label for="review-comment-text">Mensagem / Feedback</label>
-              <textarea id="review-comment-text" class="input-premium" rows="4" placeholder="Conte como foi sua experiência..." style="resize: none;" required></textarea>
+            <div class="booking-form-group flex flex-col gap-1.5">
+              <label for="review-comment-text" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">Mensagem / Feedback</label>
+              <textarea id="review-comment-text" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner" rows="4" placeholder="Conte como foi sua experiência..." style="resize: none;" required></textarea>
             </div>
-            <button type="submit" class="btn-premium btn-primary" id="btn-submit-review" aria-label="Enviar avaliação">
+            <button type="submit" class="btn-premium btn-primary active:scale-95 shadow-luxury-diffuse" id="btn-submit-review" aria-label="Enviar avaliação">
               ENVIAR AVALIAÇÃO
             </button>
           </form>
@@ -309,73 +395,173 @@
       </section>
 
       <!-- ==========================================
-           4. ADMIN SCREEN (PASSWORD PROTECTED)
+           4. TELA DE LOGIN / CADASTRO (PROTEGIDO)
+           ========================================== -->
+      <section id="login-screen" class="app-screen space-y-6">
+        <h2 class="section-title reveal-item-tw font-display text-3xl font-black tracking-wider uppercase text-center" id="login-screen-title">ACESSE SUA <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Conta</span></h2>
+        
+        <div class="auth-card bg-studio-card/60 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-luxury-diffuse relative overflow-hidden reveal-item-tw delay-1" id="auth-card-box">
+          <!-- Toggle Cliente / Admin -->
+          <div class="auth-toggle-container flex bg-black/45 border border-white/5 p-1 rounded-lg mb-6" id="auth-toggle">
+            <button class="auth-toggle-btn active flex-1 py-2 text-sm text-zinc-400 font-barlow tracking-wider uppercase rounded font-bold transition-all active:scale-95" data-mode="client" id="toggle-btn-client">CLIENTE</button>
+            <button class="auth-toggle-btn flex-1 py-2 text-sm text-zinc-400 font-barlow tracking-wider uppercase rounded font-bold transition-all active:scale-95" data-mode="admin" id="toggle-btn-admin">ADMIN</button>
+          </div>
+
+          <!-- Formulário: LOGIN DO CLIENTE -->
+          <form id="form-client-login" class="auth-form space-y-4" onsubmit="return false;">
+            <div class="booking-form-group flex flex-col gap-1.5">
+              <label for="client-login-email" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">E-mail</label>
+              <input type="email" id="client-login-email" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner" placeholder="seuemail@exemplo.com" required>
+            </div>
+            <div class="booking-form-group flex flex-col gap-1.5">
+              <label for="client-login-password" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">Senha</label>
+              <input type="password" id="client-login-password" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-premium btn-primary mt-2 active:scale-95 shadow-luxury-diffuse" id="btn-execute-client-login">ENTRAR</button>
+            <p class="auth-subtitle text-center text-xs text-zinc-400 mt-4">Ainda não tem conta? <span class="auth-link text-gold-accent cursor-pointer underline font-bold" id="link-to-register">Cadastre-se</span></p>
+          </form>
+
+          <!-- Formulário: CADASTRO DO CLIENTE (Somente Clientes/Usuários podem criar conta) -->
+          <form id="form-client-register" class="auth-form d-none space-y-4" onsubmit="return false;">
+            <div class="booking-form-group flex flex-col gap-1.5">
+              <label for="client-reg-name" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">Nome Completo</label>
+              <input type="text" id="client-reg-name" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner" placeholder="Ex: João Silva" required>
+            </div>
+            <div class="booking-form-group flex flex-col gap-1.5">
+              <label for="client-reg-email" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">E-mail</label>
+              <input type="email" id="client-reg-email" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner" placeholder="seuemail@exemplo.com" required>
+            </div>
+            <div class="booking-form-group flex flex-col gap-1.5">
+              <label for="client-reg-phone" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">WhatsApp / Telefone</label>
+              <input type="tel" id="client-reg-phone" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner" placeholder="Ex: (15) 99999-9999" required>
+            </div>
+            <div class="booking-form-group flex flex-col gap-1.5">
+              <label for="client-reg-password" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">Criar Senha</label>
+              <input type="password" id="client-reg-password" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner" placeholder="Crie uma senha forte" required>
+            </div>
+            <button type="submit" class="btn-premium btn-primary mt-2 active:scale-95 shadow-luxury-diffuse" id="btn-execute-client-register">CADASTRAR E ENTRAR</button>
+            <p class="auth-subtitle text-center text-xs text-zinc-400 mt-4">Já possui conta? <span class="auth-link text-gold-accent cursor-pointer underline font-bold" id="link-to-login">Voltar ao Login</span></p>
+          </form>
+
+          <!-- Formulário: LOGIN DO ADMIN (Apenas login, sem opção de cadastro) -->
+          <form id="form-admin-login" class="auth-form d-none space-y-4" onsubmit="return false;">
+            <div class="booking-form-group flex flex-col gap-1.5">
+              <label for="admin-login-password" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">Senha Administrativa</label>
+              <input type="password" id="admin-login-password" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-barber-blue text-center transition-all shadow-inner" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-premium mt-2 active:scale-95 bg-gradient-to-r from-barber-blue to-cyan-900 text-white font-barlow tracking-wider font-bold shadow-[0_0_20px_rgba(27,58,140,0.5)] border border-white/10" id="btn-execute-admin-login">ENTRAR NO PAINEL</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           5. PERFIL DO CLIENTE
+           ========================================== -->
+      <section id="profile-screen" class="app-screen space-y-6">
+        <h2 class="section-title reveal-item-tw font-display text-3xl font-black tracking-wider uppercase text-center" id="profile-screen-title">SEU <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Perfil</span></h2>
+        
+        <!-- Detalhes do Usuário -->
+        <article class="profile-header-card reveal-item-tw delay-1 flex flex-col items-center text-center p-6 border border-white/10 rounded-2xl shadow-luxury-diffuse relative" id="client-profile-header">
+          <div class="profile-avatar-circle w-[70px] h-[70px] rounded-full bg-gradient-to-tr from-zinc-200 via-neutral-400 to-zinc-200 text-black flex justify-center items-center text-2xl font-cinzel font-bold border-2 border-text-warm shadow-md mb-3" id="profile-avatar-initials">JS</div>
+          <h3 class="profile-name font-cinzel text-xl font-medium text-text-warm" id="profile-client-display-name">-</h3>
+          <p class="profile-email text-xs text-zinc-400 font-light font-sans mt-0.5" id="profile-client-display-email">-</p>
+        </article>
+
+        <!-- Histórico de Agendamentos -->
+        <section class="profile-bookings-section reveal-item-tw delay-2 space-y-4" id="profile-bookings">
+          <h3 class="font-barlow text-sm tracking-wider uppercase text-text-warm border-b border-white/5 pb-2 font-bold">MEUS <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Agendamentos</span></h3>
+          <div class="client-bookings-list flex flex-col gap-3" id="client-personal-bookings-list">
+            <!-- Populados dinamicamente via JS -->
+          </div>
+        </section>
+
+        <!-- Botão Logout -->
+        <button class="btn-premium btn-secondary mt-4 reveal-item-tw delay-3 active:scale-95 shadow-luxury-diffuse" id="btn-execute-client-logout" aria-label="Sair da minha conta">
+          <i class="fa-solid fa-right-from-bracket"></i> SAIR DA CONTA
+        </button>
+      </section>
+
+      <!-- ==========================================
+           6. ADMIN SCREEN (PASSWORD PROTECTED)
            ========================================== -->
       <section id="admin-screen" class="app-screen">
         
-        <!-- Tela de Bloqueio (Senha) -->
-        <article class="admin-lock-screen" id="admin-login-lock">
-          <i class="fa-solid fa-user-shield admin-lock-icon"></i>
-          <h2 class="step-title">Painel Administrativo</h2>
-          <p class="step-description">Acesso restrito para funcionários da JOTAGAAHBS Barbearia.</p>
-          
-          <form id="admin-login-form" style="width: 100%; max-width: 320px;" onsubmit="return false;">
-            <div class="booking-form-group">
-              <label for="admin-password">Senha de Acesso</label>
-              <input type="password" id="admin-password" class="input-premium text-center" placeholder="••••••••" required>
-            </div>
-            <button type="submit" class="btn-premium btn-primary" id="btn-login-admin" aria-label="Entrar no painel administrativo">ENTRAR</button>
-          </form>
-        </article>
-
         <!-- Dashboard Administrativo Liberado -->
-        <div class="admin-dashboard-view" id="admin-dashboard">
-          <div class="admin-tabs" id="admin-tabs-nav">
-            <button class="admin-tab-btn active" data-tab="tab-bookings" id="tab-btn-bookings">Agendamentos</button>
-            <button class="admin-tab-btn" data-tab="tab-blocks" id="tab-btn-blocks">Bloqueios</button>
+        <div class="admin-dashboard-view space-y-6" id="admin-dashboard">
+          <h2 class="section-title reveal-item-tw font-display text-3xl font-black tracking-wider uppercase text-center">PAINEL DE <span class="highlight-serif font-cormorant italic font-bold text-barber-red lowercase text-[1.25em]">Controle</span></h2>
+          
+          <div class="admin-tabs reveal-item-tw delay-1 flex border-b border-white/5 mb-4" id="admin-tabs-nav">
+            <button class="admin-tab-btn active flex-1 bg-none border-b-2 border-transparent py-3 text-xs tracking-wider font-barlow font-bold uppercase text-zinc-400 transition-all" data-tab="tab-bookings" id="tab-btn-bookings">Agendamentos</button>
+            <button class="admin-tab-btn flex-1 bg-none border-b-2 border-transparent py-3 text-xs tracking-wider font-barlow font-bold uppercase text-zinc-400 transition-all" data-tab="tab-blocks" id="tab-btn-blocks">Ajustes &amp; Bloqueios</button>
           </div>
 
           <!-- Aba de Agendamentos -->
-          <div class="admin-pane active" id="tab-bookings">
-            <div class="chrome-card mb-2" id="admin-stats-card">
-              <div class="admin-card-header">
-                <h3>Resumo de Hoje</h3>
-                <span class="admin-badge" id="today-bookings-count">0</span>
+          <div class="admin-pane active space-y-4" id="tab-bookings">
+            <!-- Estatísticas com Perspectiva Isométrica -->
+            <div class="chrome-card isometric-grid-card rounded-2xl p-5 reveal-item-tw delay-2 flex justify-between items-center" id="admin-stats-card">
+              <div class="space-y-1">
+                <h3 class="font-barlow tracking-wider uppercase font-bold text-sm text-text-warm">Resumo de Hoje</h3>
+                <p class="text-[0.78rem] text-zinc-400 font-light">Gerencie agendamentos no sistema local.</p>
               </div>
-              <p style="font-size: 0.85rem;">Gerencie as reservas e envie lembretes rápidos via WhatsApp.</p>
+              <span class="admin-badge bg-barber-red text-white text-xs font-barlow font-bold px-3 py-1 rounded-full shadow" id="today-bookings-count">0</span>
             </div>
 
-            <div class="bookings-list" id="admin-bookings-list">
-              <!-- Preenchido via JS com agendamentos do localStorage -->
+            <div class="bookings-list reveal-item-tw delay-3 flex flex-col gap-3" id="admin-bookings-list">
+              <!-- Preenchido via JS -->
             </div>
           </div>
 
           <!-- Aba de Bloqueio de Datas/Horários -->
-          <div class="admin-pane" id="tab-blocks">
-            <div class="chrome-card mb-2" id="admin-block-form-card">
-              <div class="admin-card-header">
-                <h3>Bloquear Dia Inteiro</h3>
+          <div class="admin-pane space-y-4" id="tab-blocks">
+            
+            <!-- Controle de Status e Nota do Estúdio -->
+            <div class="chrome-card chrome-border-premium rounded-2xl p-5 shadow-luxury-diffuse" id="admin-studio-status-card">
+              <div class="admin-card-header mb-3 border-b border-white/5 pb-2">
+                <h3 class="font-barlow tracking-wider uppercase font-bold text-sm text-text-warm">Controle do Estúdio</h3>
               </div>
-              <form id="admin-block-date-form" onsubmit="return false;">
-                <div class="booking-form-group">
-                  <label for="block-date-input">Data a Bloquear</label>
-                  <input type="date" id="block-date-input" class="input-premium" required>
+              <form id="admin-studio-status-form" onsubmit="return false;" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="booking-form-group flex flex-col gap-1.5">
+                    <label for="admin-status-select" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">Funcionamento</label>
+                    <select id="admin-status-select" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner cursor-pointer" style="width: 100%;">
+                      <option value="auto">Automático</option>
+                      <option value="open">Aberto Agora</option>
+                      <option value="closed">Fechado</option>
+                    </select>
+                  </div>
+                  <div class="booking-form-group flex flex-col gap-1.5">
+                    <label for="admin-rating-input" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">Nota de Avaliação</label>
+                    <input type="number" id="admin-rating-input" step="0.1" min="1.0" max="5.0" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner" placeholder="Ex: 5.0" required>
+                  </div>
                 </div>
-                <button type="submit" class="btn-premium btn-primary" id="btn-block-date" aria-label="Confirmar bloqueio de data">BLOQUEAR DIA</button>
+                <button type="submit" class="btn-premium btn-primary active:scale-95 shadow-luxury-diffuse" id="btn-save-studio-config" aria-label="Salvar configurações do estúdio">SALVAR AJUSTES</button>
               </form>
             </div>
 
-            <div class="chrome-card" id="admin-blocked-list-card">
-              <div class="admin-card-header">
-                <h3>Datas Bloqueadas</h3>
+            <div class="chrome-card chrome-border-premium rounded-2xl p-5 shadow-luxury-diffuse" id="admin-block-form-card">
+              <div class="admin-card-header mb-3 border-b border-white/5 pb-2">
+                <h3 class="font-barlow tracking-wider uppercase font-bold text-sm text-text-warm">Bloquear Dia Inteiro</h3>
               </div>
-              <div class="blocked-dates-list" id="admin-blocked-dates-list">
+              <form id="admin-block-date-form" onsubmit="return false;" class="space-y-4">
+                <div class="booking-form-group flex flex-col gap-1.5">
+                  <label for="block-date-input" class="font-barlow text-[0.8rem] tracking-wider text-zinc-400 uppercase">Data a Bloquear</label>
+                  <input type="date" id="block-date-input" class="input-premium bg-zinc-900/60 border border-white/10 p-3 rounded-lg text-text-warm text-sm focus:outline-none focus:border-gold-accent transition-all shadow-inner" required>
+                </div>
+                <button type="submit" class="btn-premium btn-primary active:scale-95 shadow-luxury-diffuse" id="btn-block-date" aria-label="Confirmar bloqueio de data">BLOQUEAR DIA</button>
+              </form>
+            </div>
+
+            <div class="chrome-card chrome-border-premium rounded-2xl p-5 shadow-luxury-diffuse" id="admin-blocked-list-card">
+              <div class="admin-card-header mb-3 border-b border-white/5 pb-2">
+                <h3 class="font-barlow tracking-wider uppercase font-bold text-sm text-text-warm">Datas Bloqueadas</h3>
+              </div>
+              <div class="blocked-dates-list flex flex-col gap-2 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar" id="admin-blocked-dates-list">
                 <!-- Populado via JS -->
               </div>
             </div>
           </div>
 
-          <button class="btn-premium btn-secondary mt-2" id="btn-logout-admin" aria-label="Sair da conta administrativa">
+          <button class="btn-premium btn-secondary mt-4 reveal-item-tw delay-4 active:scale-95 shadow-luxury-diffuse" id="btn-logout-admin" aria-label="Sair da conta administrativa">
             <i class="fa-solid fa-right-from-bracket"></i> SAIR DO PAINEL
           </button>
         </div>
@@ -385,28 +571,28 @@
     </main>
 
     <!-- Botão Flutuante do WhatsApp -->
-    <a href="https://wa.me/5515996406909?text=Ol%C3%A1%21+Gostaria+de+saber+mais+sobre+a+Barbearia+JOTAGAAHBS." target="_blank" class="whatsapp-float" id="whatsapp-float-btn" aria-label="Fale Conosco pelo WhatsApp">
+    <a href="https://wa.me/5515996406909?text=Ol%C3%A1%21+acabei+de+reservar+meu+horario+." target="_blank" class="whatsapp-float transition-all" id="whatsapp-float-btn" aria-label="Fale Conosco pelo WhatsApp">
       <i class="fa-brands fa-whatsapp"></i>
     </a>
 
-    <!-- Barra de Navegação Inferior estilo App Nativo -->
+    <!-- Barra de Navegação Inferior estilo App Nativo Glassmorphism (Menu Conta removido, agora estritamente operacional) -->
     <nav class="nav-bottom-bar" id="app-bottom-nav">
-      <a class="nav-item active" data-screen="home-screen" id="nav-home">
+      <a class="nav-item active active:scale-95" data-screen="home-screen" id="nav-home">
         <i class="fa-solid fa-house"></i>
-        <span>Início</span>
+        <span class="font-barlow font-bold">Início</span>
       </a>
-      <a class="nav-item" data-screen="booking-screen" id="nav-booking">
+      <a class="nav-item active:scale-95" data-screen="booking-screen" id="nav-booking">
         <i class="fa-solid fa-calendar-days"></i>
-        <span>Agendar</span>
+        <span class="font-barlow font-bold">Agendar</span>
       </a>
-      <a class="nav-item" data-screen="reviews-screen" id="nav-reviews">
+      <a class="nav-item active:scale-95" data-screen="reviews-screen" id="nav-reviews">
         <i class="fa-solid fa-star-half-stroke"></i>
-        <span>Avaliar</span>
+        <span class="font-barlow font-bold">Avaliar</span>
       </a>
     </nav>
 
     <!-- Toast Notifications Globais -->
-    <div class="toast-container" id="toast-container-global"></div>
+    <div class="toast-container fixed top-5 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[440px] z-[1000] flex flex-col gap-3 pointer-events-none" id="toast-container-global"></div>
 
   </div>
 
