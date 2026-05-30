@@ -1,0 +1,57 @@
+# 🔒 ARQUIVOS DE CONFIGURAÇÃO E SEGREDOS (Lei 11 - APPSEC SÊNIOR)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+*.cert
+secret.key
+
+# 📦 DEPENDÊNCIAS (Futuros pacotes de desenvolvimento)
+node_modules/
+jspm_packages/
+web_modules/
+.npm/
+.yarn/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# 🖥️ ARQUIVOS DE SISTEMA OPERACIONAL
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# 🛠️ CONFIGURAÇÕES DE EDITORES E IDE (VS Code, JetBrains, etc.)
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# 📝 LOGS E DIAGNÓSTICOS
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+# 🧪 ARQUIVOS TEMPORÁRIOS E SCRATCH FILES
+scratch/
+tmp/
+temp/
+.gemini/
+.antigravity/
+dist/
+build/

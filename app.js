@@ -74,9 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const emailExists = clients.some(c => c.email === client.email);
       if (emailExists) return false;
       
+      // 🔒 SEGURANÇA [VULN-3]: Whitelisting estrito de campos e mitigação de escalada de privilégios (CWE-915 / Lei 2)
       const newClient = {
-        ...client,
-        role: client.role || 'client'
+        name: String(client.name),
+        email: String(client.email),
+        phone: String(client.phone),
+        password: String(client.password),
+        role: 'client', // Forçar estritamente 'client', impedindo bypass do console
+        avatar: client.avatar ? String(client.avatar) : null
       };
       
       clients.push(newClient);
@@ -155,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     currentScreen: 'home-screen',
     booking: {
       step: 1,
-      selectedService: null,
+      selectedServices: [], // 🔒 SEGURANÇA [Lei 1]: Armazena múltiplos serviços selecionados
       selectedDate: null, 
       selectedTime: null, 
       clientName: '',
@@ -295,6 +300,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inicializa as máscaras nos campos de celular
   applyPhoneMask(clientRegPhoneInput);
   applyPhoneMask(inputBookingPhone);
+
+  // 🔒 SEGURANÇA [Lei 15]: Auto-preenchimento do e-mail salvo (Lembrar Login)
+  const rememberedEmail = localStorage.getItem('remembered_email');
+  const rememberCheckbox = document.getElementById('client-login-remember');
+  if (rememberedEmail && clientLoginEmailInput) {
+    clientLoginEmailInput.value = rememberedEmail;
+    if (rememberCheckbox) {
+      rememberCheckbox.checked = true;
+    }
+  }
 
   /* ==========================================
      FUNÇÕES DE ACESSO A SESSÕES DO LOCALSTORAGE
@@ -514,6 +529,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function formatDate(date) {
     return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+
+  // 🔒 SEGURANÇA [VULN-1]: Função de escape de caracteres HTML para mitigar Stored XSS (CWE-79 / Lei 10)
+  function escapeHTML(str) {
+    if (typeof str !== 'string') return str;
+    return str.replace(/[&<>"']/g, (m) => {
+      switch (m) {
+        case '&': return '&amp;';
+        case '<': return '&lt;';
+        case '>': return '&gt;';
+        case '"': return '&quot;';
+        case "'": return '&#039;';
+        default: return m;
+      }
+    });
   }
 
   function updateStudioHomeDisplay() {
@@ -777,6 +807,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const email = clientLoginEmailInput.value.trim().toLowerCase();
     const password = clientLoginPasswordInput.value;
+    const rememberCheckbox = document.getElementById('client-login-remember');
 
     if (!email || !password) {
       showToast('Preencha todos os campos.', 'error');
@@ -786,6 +817,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const user = DB.authenticateUser(email, password);
 
     if (user) {
+      // 🔒 SEGURANÇA [Lei 15]: Persistir e-mail caso 'Lembrar E-mail' esteja ativado
+      if (rememberCheckbox && rememberCheckbox.checked) {
+        localStorage.setItem('remembered_email', email);
+      } else {
+        localStorage.removeItem('remembered_email');
+      }
+
       if (user.role === 'admin') {
         // Fluxo de Login do Barbeiro / Admin
         setAdminAuthenticated(true);
@@ -903,9 +941,9 @@ document.addEventListener('DOMContentLoaded', () => {
       item.className = `client-booking-item reveal-item-tw flex justify-between items-center p-4 border border-white/5 rounded-xl bg-zinc-950/40 backdrop-blur-sm transition-all duration-300 hover:border-white/15 ${delayClass}`;
       item.innerHTML = `
         <div class="client-booking-item-details space-y-1">
-          <h4 class="font-cinzel text-xs font-semibold tracking-wider text-text-warm uppercase">${bk.serviceName}</h4>
-          <p class="text-[0.75rem] text-zinc-400 font-light flex items-center gap-1.5"><i class="fa-regular fa-calendar text-gold-accent"></i> ${bk.date} às ${bk.time}</p>
-          <p class="text-[0.68rem] text-zinc-500 font-light flex items-center gap-1.5"><i class="fa-regular fa-clock"></i> Duração: ${bk.duration}</p>
+          <h4 class="font-cinzel text-xs font-semibold tracking-wider text-text-warm uppercase">${escapeHTML(bk.serviceName)}</h4>
+          <p class="text-[0.75rem] text-zinc-400 font-light flex items-center gap-1.5"><i class="fa-regular fa-calendar text-gold-accent"></i> ${escapeHTML(bk.date)} às ${escapeHTML(bk.time)}</p>
+          <p class="text-[0.68rem] text-zinc-500 font-light flex items-center gap-1.5"><i class="fa-regular fa-clock"></i> Duração: ${escapeHTML(bk.duration)}</p>
         </div>
         <span class="client-booking-price font-barlow text-lg text-gold-accent font-bold">${formatPrice(bk.price)}</span>
       `;
@@ -918,15 +956,17 @@ document.addEventListener('DOMContentLoaded', () => {
      FLUXO DE AGENDAMENTO (5 PASSOS)
      ========================================== */
 
-  // 1. Serviços com reveal staggered
+  // 1. Serviços com reveal staggered (multi-seleção de até 3 serviços)
   function renderServicesList() {
     servicesListGrid.innerHTML = '';
     SERVICES.forEach((service, index) => {
       const card = document.createElement('article');
       const delayClass = index < 5 ? `delay-${index + 1}` : 'delay-5';
       
+      const isSelected = appState.booking.selectedServices.some(s => s.id === service.id);
+      
       // Card com bordas cromadas, glassmorphism e cores do tema reativas
-      const selectedClasses = appState.booking.selectedService?.id === service.id 
+      const selectedClasses = isSelected 
         ? 'border-gold-accent bg-gold-accent/5 ring-1 ring-gold-accent/30' 
         : 'border-white/10 bg-zinc-950/60 hover:border-white/20';
 
@@ -935,24 +975,29 @@ document.addEventListener('DOMContentLoaded', () => {
       card.setAttribute('tabindex', '0');
       card.innerHTML = `
         <div class="service-item-info space-y-1 pr-4">
-          <h4 class="font-cinzel text-xs font-semibold tracking-wider text-text-warm uppercase">${service.name}</h4>
-          <p class="text-[0.74rem] text-zinc-400 font-light leading-snug">${service.desc}</p>
-          <span class="text-[0.68rem] text-gold-accent/80 font-medium block pt-1"><i class="fa-regular fa-clock mr-1"></i> Duração: ${service.duration}</span>
+          <h4 class="font-cinzel text-xs font-semibold tracking-wider text-text-warm uppercase">${escapeHTML(service.name)}</h4>
+          <p class="text-[0.74rem] text-zinc-400 font-light leading-snug">${escapeHTML(service.desc)}</p>
+          <span class="text-[0.68rem] text-gold-accent/80 font-medium block pt-1"><i class="fa-regular fa-clock mr-1"></i> Duração: ${escapeHTML(service.duration)}</span>
         </div>
         <span class="service-item-price font-barlow text-lg text-gold-accent font-bold flex-shrink-0">${formatPrice(service.price)}</span>
       `;
       
       card.addEventListener('click', () => {
-        appState.booking.selectedService = service;
-        document.querySelectorAll('.booking-service-card').forEach(c => {
-          c.className = c.className.replace('border-gold-accent bg-gold-accent/5 ring-1 ring-gold-accent/30', 'border-white/10 bg-zinc-950/60 hover:border-white/20');
-        });
-        card.className = card.className.replace('border-white/10 bg-zinc-950/60 hover:border-white/20', 'border-gold-accent bg-gold-accent/5 ring-1 ring-gold-accent/30');
+        const selectedIdx = appState.booking.selectedServices.findIndex(s => s.id === service.id);
         
-        setTimeout(() => {
-          appState.booking.step = 2;
-          updateBookingFlowUI();
-        }, 300);
+        if (selectedIdx > -1) {
+          // Se já selecionado, remove
+          appState.booking.selectedServices.splice(selectedIdx, 1);
+          card.className = card.className.replace('border-gold-accent bg-gold-accent/5 ring-1 ring-gold-accent/30', 'border-white/10 bg-zinc-950/60 hover:border-white/20');
+        } else {
+          // Se não selecionado, adiciona verificando limite de 3
+          if (appState.booking.selectedServices.length >= 3) {
+            showToast('Você pode selecionar no máximo 3 serviços simultâneos.', 'warning');
+            return;
+          }
+          appState.booking.selectedServices.push(service);
+          card.className = card.className.replace('border-white/10 bg-zinc-950/60 hover:border-white/20', 'border-gold-accent bg-gold-accent/5 ring-1 ring-gold-accent/30');
+        }
       });
 
       servicesListGrid.appendChild(card);
@@ -1068,20 +1113,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 3. Horários
+  // 3. Horários de 30 em 30 minutos, das 08:00 até as 19:30 (ou 18:30 aos sábados)
   function renderTimeSlots() {
     timeSlotsGrid.innerHTML = '';
     
     if (!appState.booking.selectedDate) return;
 
     const dayOfWeek = appState.booking.selectedDate.getDay();
+    const isSaturday = dayOfWeek === 6;
     let slots = [];
     
     const startHour = 8;
-    const endHour = (dayOfWeek === 6) ? 19 : 20;
+    const endHour = isSaturday ? 18 : 19;
+    const endMinute = 30;
 
-    for (let hour = startHour; hour < endHour; hour++) {
+    for (let hour = startHour; hour <= endHour; hour++) {
       slots.push(`${String(hour).padStart(2, '0')}:00`);
+      if (hour < endHour || (hour === endHour && endMinute >= 30)) {
+        slots.push(`${String(hour).padStart(2, '0')}:30`);
+      }
     }
 
     const bookings = DB.getBookings();
@@ -1096,10 +1146,14 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const isSelected = appState.booking.selectedTime === time;
       const isOccupied = occupiedTimes.includes(time);
+      
+      // 🔒 SEGURANÇA [Lei 1]: Verificação estrita de horários que já passaram no dia de hoje
       const isToday = appState.booking.selectedDate.toDateString() === new Date().toDateString();
-      const currentHourReal = new Date().getHours();
-      const slotHour = parseInt(time.split(':')[0]);
-      const isPastSlot = isToday && slotHour <= currentHourReal;
+      const now = new Date();
+      const currentMinutesToday = now.getHours() * 60 + now.getMinutes();
+      const [slotH, slotM] = time.split(':').map(Number);
+      const slotMinutesToday = slotH * 60 + slotM;
+      const isPastSlot = isToday && slotMinutesToday <= currentMinutesToday;
 
       let btnClasses = `time-slot-btn reveal-item-tw text-center py-2.5 rounded-lg border font-barlow tracking-wider font-bold transition-all duration-300 text-sm ${delayClass} `;
 
@@ -1135,15 +1189,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 4. Confirmação
+  // 4. Confirmação (Multi-serviço com acúmulo de tempo e valor total)
   function renderConfirmationReceipt() {
-    if (!appState.booking.selectedService || !appState.booking.selectedDate || !appState.booking.selectedTime) return;
+    if (appState.booking.selectedServices.length === 0 || !appState.booking.selectedDate || !appState.booking.selectedTime) return;
 
-    receiptServiceName.textContent = appState.booking.selectedService.name;
+    const names = appState.booking.selectedServices.map(s => s.name).join(' + ');
+    const totalPrice = appState.booking.selectedServices.reduce((sum, s) => sum + s.price, 0);
+    
+    // Calcula a duração total
+    let totalMinutes = 0;
+    appState.booking.selectedServices.forEach(s => {
+      const minutes = parseInt(s.duration.replace(/\D/g, ''));
+      if (!isNaN(minutes)) {
+        totalMinutes += minutes;
+      }
+    });
+    
+    const durationFormatted = totalMinutes >= 60 
+      ? `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60} min` 
+      : `${totalMinutes} min`;
+
+    receiptServiceName.textContent = names;
     receiptDate.textContent = formatDate(appState.booking.selectedDate);
-    receiptTime.textContent = `${appState.booking.selectedTime} (${appState.booking.selectedService.duration})`;
+    receiptTime.textContent = `${appState.booking.selectedTime} (${durationFormatted})`;
     receiptClientName.textContent = appState.booking.clientName;
-    receiptPrice.textContent = formatPrice(appState.booking.selectedService.price);
+    receiptPrice.textContent = formatPrice(totalPrice);
   }
 
   function updateBookingFlowUI() {
@@ -1207,8 +1277,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const step = appState.booking.step;
 
     if (step === 1) {
-      if (!appState.booking.selectedService) {
-        showToast('Selecione um procedimento para avançar.', 'error');
+      // 🔒 SEGURANÇA [Lei 1]: Validar se pelo menos um serviço foi selecionado
+      if (appState.booking.selectedServices.length === 0) {
+        showToast('Selecione pelo menos um procedimento para avançar.', 'error');
         return;
       }
       appState.booking.step = 2;
@@ -1266,7 +1337,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const client = getLoggedClient();
     const dateFormatted = formatDate(b.selectedDate);
 
-    // 1. Double-Check de Segurança: Validar se a data foi bloqueada pelo Administrador
+    // 🔒 SEGURANÇA [Lei 8]: Double-Check de Segurança: Validar se a data foi bloqueada pelo Administrador (Race Condition Prevention)
     const blockedDates = DB.getBlockedDates();
     const isoDateStr = `${b.selectedDate.getFullYear()}-${String(b.selectedDate.getMonth() + 1).padStart(2, '0')}-${String(b.selectedDate.getDate()).padStart(2, '0')}`;
     if (blockedDates.includes(isoDateStr)) {
@@ -1276,7 +1347,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // 2. Double-Check de Segurança: Validar se o horário já foi reservado por outro cliente
+    // 🔒 SEGURANÇA [Lei 8]: Double-Check de Segurança: Validar se o horário já foi reservado por outro cliente (Race Condition Prevention)
     const currentBookings = DB.getBookings();
     const isAlreadyBooked = currentBookings.some(bk => bk.date === dateFormatted && bk.time === b.selectedTime);
     if (isAlreadyBooked) {
@@ -1286,11 +1357,27 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     
+    // Juntar nomes dos serviços e calcular preços e durações acumulados
+    const names = b.selectedServices.map(s => s.name).join(' + ');
+    const totalPrice = b.selectedServices.reduce((sum, s) => sum + s.price, 0);
+    
+    let totalMinutes = 0;
+    b.selectedServices.forEach(s => {
+      const minutes = parseInt(s.duration.replace(/\D/g, ''));
+      if (!isNaN(minutes)) {
+        totalMinutes += minutes;
+      }
+    });
+    
+    const durationFormatted = totalMinutes >= 60 
+      ? `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60} min` 
+      : `${totalMinutes} min`;
+
     const newBooking = {
       id: 'bk_' + Date.now(),
-      serviceName: b.selectedService.name,
-      price: b.selectedService.price,
-      duration: b.selectedService.duration,
+      serviceName: names,
+      price: totalPrice,
+      duration: durationFormatted,
       date: dateFormatted,
       time: b.selectedTime,
       clientName: b.clientName,
@@ -1306,8 +1393,8 @@ document.addEventListener('DOMContentLoaded', () => {
 `olá, acabei de agendar meu horario pelo aplicativo
 
 cliente = ${b.clientName}
-serviço = ${b.selectedService.name}
-valor = ${formatPrice(b.selectedService.price)}
+serviço = ${names}
+valor = ${formatPrice(totalPrice)}
 horario = ${dateFormatted} às ${b.selectedTime}
 
 confirmado pelo aplicativo de luxo, aguardo o atendimento`
@@ -1322,7 +1409,7 @@ confirmado pelo aplicativo de luxo, aguardo o atendimento`
       
       appState.booking = {
         step: 1,
-        selectedService: null,
+        selectedServices: [],
         selectedDate: null,
         selectedTime: null,
         clientName: '',
@@ -1386,11 +1473,11 @@ confirmado pelo aplicativo de luxo, aguardo o atendimento`
 
       reviewItem.innerHTML = `
         <div class="review-header flex justify-between text-xs font-sans">
-          <span class="review-author font-semibold text-text-warm">${rev.author}</span>
-          <span class="review-date text-zinc-500">${rev.date}</span>
+          <span class="review-author font-semibold text-text-warm">${escapeHTML(rev.author)}</span>
+          <span class="review-date text-zinc-500">${escapeHTML(rev.date)}</span>
         </div>
         <div class="review-stars flex gap-0.5">${stars}</div>
-        <p class="review-comment text-[0.8rem] text-zinc-400 font-light italic">"${rev.text}"</p>
+        <p class="review-comment text-[0.8rem] text-zinc-400 font-light italic">"${escapeHTML(rev.text)}"</p>
       `;
 
       reviewsListContainer.appendChild(reviewItem);
@@ -1476,6 +1563,107 @@ confirmado pelo aplicativo de luxo, aguardo o atendimento`
     });
   });
 
+  // Estado global do período financeiro no painel admin e data selecionada de filtro
+  let adminFinancePeriod = 'day'; // 'day', 'week', 'month'
+  let adminSelectedDate = new Date(); // Data base de filtro ativa
+
+  // 🔒 SEGURANÇA [Lei 15]: Funções utilitárias seguras para cálculo de períodos temporais com data selecionada
+  function isDateInSelectedWeek(dateStr) {
+    if (!dateStr) return false;
+    const parts = dateStr.split('/');
+    if (parts.length !== 3) return false;
+    const date = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+    
+    // Achar início da semana (domingo) baseado na data selecionada pelo admin
+    const baseDate = new Date(adminSelectedDate.getFullYear(), adminSelectedDate.getMonth(), adminSelectedDate.getDate());
+    const dayOfWeek = baseDate.getDay();
+    const startOfWeek = new Date(baseDate);
+    startOfWeek.setDate(baseDate.getDate() - dayOfWeek);
+    startOfWeek.setHours(0, 0, 0, 0);
+    
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+    
+    return date >= startOfWeek && date <= endOfWeek;
+  }
+
+  function isDateInSelectedMonth(dateStr) {
+    if (!dateStr) return false;
+    const parts = dateStr.split('/');
+    if (parts.length !== 3) return false;
+    const month = parseInt(parts[1]) - 1;
+    const year = parseInt(parts[2]);
+    
+    return month === adminSelectedDate.getMonth() && year === adminSelectedDate.getFullYear();
+  }
+
+  // Inicializar os seletores metálicos iOS de data/período financeiro
+  const periodBtns = document.querySelectorAll('.finance-period-btn');
+  const periodLabel = document.getElementById('finance-period-label');
+  const financeDateInput = document.getElementById('finance-date-input');
+  const financeMonthInput = document.getElementById('finance-month-input');
+  
+  if (financeDateInput) {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    financeDateInput.value = `${yyyy}-${mm}-${dd}`;
+    
+    financeDateInput.addEventListener('change', (e) => {
+      if (e.target.value) {
+        // Criar data local correta sem deslocamento de timezone
+        adminSelectedDate = new Date(e.target.value + 'T00:00:00');
+        renderAdminDashboard();
+      }
+    });
+  }
+
+  if (financeMonthInput) {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    financeMonthInput.value = `${yyyy}-${mm}`;
+    
+    financeMonthInput.addEventListener('change', (e) => {
+      if (e.target.value) {
+        adminSelectedDate = new Date(e.target.value + '-01T00:00:00');
+        renderAdminDashboard();
+      }
+    });
+  }
+  
+  if (periodBtns) {
+    periodBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        periodBtns.forEach(b => {
+          b.classList.remove('active', 'border-gold-accent', 'text-gold-accent', 'bg-gold-accent/5');
+          b.classList.add('border-white/5', 'bg-zinc-950/40', 'text-zinc-400');
+        });
+        
+        btn.classList.remove('border-white/5', 'bg-zinc-950/40', 'text-zinc-400');
+        btn.classList.add('active', 'border-gold-accent', 'text-gold-accent', 'bg-gold-accent/5');
+        
+        adminFinancePeriod = btn.getAttribute('data-period');
+        if (periodLabel) {
+          periodLabel.textContent = adminFinancePeriod === 'day' ? 'Dia' : adminFinancePeriod === 'week' ? 'Semana' : 'Mês';
+        }
+
+        // Controlar visibilidade dos inputs seletores
+        if (adminFinancePeriod === 'day' || adminFinancePeriod === 'week') {
+          if (financeDateInput) financeDateInput.classList.remove('hidden');
+          if (financeMonthInput) financeMonthInput.classList.add('hidden');
+        } else {
+          if (financeDateInput) financeDateInput.classList.add('hidden');
+          if (financeMonthInput) financeMonthInput.classList.remove('hidden');
+        }
+        
+        renderAdminDashboard();
+      });
+    });
+  }
+
   function renderAdminDashboard() {
     const bookings = DB.getBookings();
     adminBookingsList.innerHTML = '';
@@ -1483,11 +1671,30 @@ confirmado pelo aplicativo de luxo, aguardo o atendimento`
     
     const todayFormatted = formatDate(new Date());
     
-    // 1. Cálculos de Caixa do Dashboard Financeiro Estilo iOS
-    const totalPaid = bookings.filter(b => b.completed).reduce((sum, b) => sum + b.price, 0);
+    // 1. Cálculos de Caixa do Dashboard Financeiro Estilo iOS com Filtro por Período e Data Selecionada
+    let totalPaid = 0;
+    let countCompleted = 0;
+    
+    const filterDateFormatted = formatDate(adminSelectedDate);
+    
+    if (adminFinancePeriod === 'day') {
+      const completedDay = bookings.filter(b => b.completed && b.date === filterDateFormatted);
+      totalPaid = completedDay.reduce((sum, b) => sum + b.price, 0);
+      countCompleted = completedDay.length;
+    } else if (adminFinancePeriod === 'week') {
+      const completedWeek = bookings.filter(b => b.completed && isDateInSelectedWeek(b.date));
+      totalPaid = completedWeek.reduce((sum, b) => sum + b.price, 0);
+      countCompleted = completedWeek.length;
+    } else if (adminFinancePeriod === 'month') {
+      const completedMonth = bookings.filter(b => b.completed && isDateInSelectedMonth(b.date));
+      totalPaid = completedMonth.reduce((sum, b) => sum + b.price, 0);
+      countCompleted = completedMonth.length;
+    }
+
     const totalPending = bookings.filter(b => !b.completed).reduce((sum, b) => sum + b.price, 0);
     const totalEstimated = totalPaid + totalPending;
-    const countCompleted = bookings.filter(b => b.completed).length;
+    
+    // Ganhos de hoje acumulam cortes de hoje independentemente do período de exibição do caixa
     const todayPaid = bookings.filter(b => b.date === todayFormatted && b.completed).reduce((sum, b) => sum + b.price, 0);
 
     // 2. Atualizar Elementos do Dashboard Financeiro no HTML (Protegido contra nulos)
@@ -1550,10 +1757,10 @@ confirmado pelo aplicativo de luxo, aguardo o atendimento`
     
     item.innerHTML = `
       <div class="booking-admin-info space-y-1">
-        <h4 class="font-cinzel text-xs font-semibold text-text-warm tracking-wider uppercase">${bk.clientName} ${isToday ? '<span class="text-barber-red font-barlow text-[0.65rem] font-black tracking-widest">[HOJE]</span>' : ''}</h4>
-        <p class="text-[0.8rem] text-zinc-400 font-semibold">${bk.serviceName} - <span class="text-gold-accent font-barlow font-bold">${formatPrice(bk.price)}</span></p>
-        <p class="text-[0.72rem] text-zinc-400 font-light flex items-center gap-1"><i class="fa-regular fa-calendar"></i> ${bk.date} às ${bk.time} (${bk.duration})</p>
-        <p class="text-[0.72rem] text-zinc-500 font-light flex items-center gap-1"><i class="fa-solid fa-phone"></i> ${bk.clientPhone}</p>
+        <h4 class="font-cinzel text-xs font-semibold text-text-warm tracking-wider uppercase">${escapeHTML(bk.clientName)} ${isToday ? '<span class="text-barber-red font-barlow text-[0.65rem] font-black tracking-widest">[HOJE]</span>' : ''}</h4>
+        <p class="text-[0.8rem] text-zinc-400 font-semibold">${escapeHTML(bk.serviceName)} - <span class="text-gold-accent font-barlow font-bold">${formatPrice(bk.price)}</span></p>
+        <p class="text-[0.72rem] text-zinc-400 font-light flex items-center gap-1"><i class="fa-regular fa-calendar"></i> ${escapeHTML(bk.date)} às ${escapeHTML(bk.time)} (${escapeHTML(bk.duration)})</p>
+        <p class="text-[0.72rem] text-zinc-500 font-light flex items-center gap-1"><i class="fa-solid fa-phone"></i> ${escapeHTML(bk.clientPhone)}</p>
       </div>
       <div class="booking-admin-actions flex items-center gap-2">
         ${bk.completed ? `
@@ -1612,8 +1819,20 @@ confirmado pelo aplicativo de luxo, aguardo o atendimento`
       DB.updateBookings(bookings);
       if (completed) {
         showToast('Corte concluído e pagamento registrado!', 'success');
+        
+        // 🔒 SEGURANÇA [Lei 15]: Transição tátil automática para a aba Concluídos
+        const tabBtnCompleted = document.getElementById('tab-btn-completed');
+        if (tabBtnCompleted) {
+          tabBtnCompleted.click();
+        }
       } else {
         showToast('Agendamento reaberto com sucesso.', 'warning');
+        
+        // 🔒 SEGURANÇA [Lei 15]: Transição tátil automática para a aba Agendamentos
+        const tabBtnBookings = document.getElementById('tab-btn-bookings');
+        if (tabBtnBookings) {
+          tabBtnBookings.click();
+        }
       }
       renderAdminDashboard();
     }
@@ -1732,34 +1951,69 @@ confirmado pelo aplicativo de luxo, aguardo o atendimento`
     profileAvatarInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
-        if (file.size > 2 * 1024 * 1024) {
-          showToast('Escolha uma imagem de até 2MB.', 'error');
+        // 🔒 SEGURANÇA [VULN-4]: Validação estrita de tipo de arquivo de imagem no cliente (CWE-434 / Lei 12)
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+          showToast('Formato de arquivo não suportado. Escolha JPEG, PNG, WEBP ou GIF.', 'error');
+          profileAvatarInput.value = '';
           return;
         }
-        
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-          const dataUrl = evt.target.result;
-          const client = getLoggedClient();
-          if (client) {
-            client.avatar = dataUrl;
-            
-            const clients = DB.getClients();
-            const updatedClients = clients.map(c => {
-              if (c.email === client.email) {
-                return { ...c, avatar: dataUrl };
+
+        if (file.size > 2 * 1024 * 1024) {
+          showToast('Escolha uma imagem de até 2MB.', 'error');
+          profileAvatarInput.value = '';
+          return;
+        }
+
+        // Validação adicional de Magic Bytes por integridade
+        const readerBytes = new FileReader();
+        readerBytes.onloadend = function(evt) {
+          if (evt.target.readyState === FileReader.DONE) {
+            const arr = new Uint8Array(evt.target.result);
+            let header = "";
+            for (let i = 0; i < Math.min(arr.length, 4); i++) {
+              header += arr[i].toString(16).toUpperCase();
+            }
+
+            // JPEG (FFD8FF), PNG (89504E47), GIF (47494638) ou WEBP (52494646 - "RIFF")
+            const isJPEG = header.startsWith("FFD8FF");
+            const isPNG = header.startsWith("89504E47");
+            const isGIF = header.startsWith("47494638");
+            const isWEBP = header.startsWith("52494646"); // "RIFF"
+
+            if (!isJPEG && !isPNG && !isGIF && !isWEBP) {
+              showToast('Arquivo de imagem inválido ou corrompido.', 'error');
+              profileAvatarInput.value = '';
+              return;
+            }
+
+            // Processar upload real
+            const reader = new FileReader();
+            reader.onload = function(e2) {
+              const dataUrl = e2.target.result;
+              const client = getLoggedClient();
+              if (client) {
+                client.avatar = dataUrl;
+                
+                const clients = DB.getClients();
+                const updatedClients = clients.map(c => {
+                  if (c.email === client.email) {
+                    return { ...c, avatar: dataUrl };
+                  }
+                  return c;
+                });
+                localStorage.setItem('jota_clients', JSON.stringify(updatedClients));
+                
+                setLoggedClient(client);
+                renderClientProfile();
+                updateNavProfileBar();
+                showToast('Foto de perfil atualizada com sucesso!', 'success');
               }
-              return c;
-            });
-            localStorage.setItem('jota_clients', JSON.stringify(updatedClients));
-            
-            setLoggedClient(client);
-            renderClientProfile();
-            updateNavProfileBar();
-            showToast('Foto de perfil atualizada com sucesso!', 'success');
+            };
+            reader.readAsDataURL(file);
           }
         };
-        reader.readAsDataURL(file);
+        readerBytes.readAsArrayBuffer(file.slice(0, 4));
       }
     });
   }

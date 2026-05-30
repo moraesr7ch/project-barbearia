@@ -616,3 +616,19 @@ body::before {
 .step-pane.active {
   display: block;
 }
+
+/* Ocultação e exibição de abas administrativas */
+.admin-pane {
+  display: none;
+}
+.admin-pane.active {
+  display: block;
+}
+
+/* Botões do Seletor de Período Financeiro (Luxo Metálico) */
+.finance-period-btn.active {
+  border-color: #C9973A !important;
+  color: #C9973A !important;
+  background-color: rgba(201, 151, 58, 0.08) !important;
+  box-shadow: 0 0 10px rgba(201, 151, 58, 0.15) !important;
+}
